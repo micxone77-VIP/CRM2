@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SureWin VIP CRM</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;
+  --green:#3fb950;--red:#f85149;--amber:#d29922;--purple:#bc8cff;
+  --gold:#ffd700;--diamond:#b9f2ff;--plat:#c0c0c0;--radius:8px;--radius-lg:12px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+button{cursor:pointer;border:none;border-radius:var(--radius);font-family:inherit;transition:all .15s}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:inherit;padding:8px 12px;font-size:13px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+textarea{resize:vertical;width:100%}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
+.brand{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.status-text{font-size:12px;color:var(--muted)}
+.btn-sm{padding:5px 12px;font-size:12px;font-weight:600}
+.btn-primary{background:var(--accent);color:#0d1117}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-green{background:var(--green);color:#0d1117;font-weight:700}
+.btn-red{background:var(--red);color:#fff;font-weight:700}
+.nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;gap:2px;overflow-x:auto}
+.nav-tab{padding:11px 14px;font-size:12px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;background:none;border-radius:0}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.main{padding:20px;max-width:1500px;margin:0 auto}
+.page{display:none}.page.active{display:block}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px}
+.stat-label{font-size:11px;color:var(--muted);margin-bottom:6px}
+.stat-value{font-size:26px;font-weight:700}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.c-green{color:var(--green)}.c-red{color:var(--red)}.c-amber{color:var(--amber)}.c-accent{color:var(--accent)}.c-purple{color:var(--purple)}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px}
+.table-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.table-title{font-size:13px;font-weight:600;flex:1}
+.table-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filter-select{padding:5px 10px;font-size:12px;height:32px}
+.search-input{padding:5px 10px;font-size:12px;height:32px;width:160px}
+.sort-btn{padding:5px 10px;font-size:11px;height:32px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px}
+.sort-btn.active{border-color:var(--accent);color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--surface2);padding:9px 11px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--text)}
+tbody tr{border-top:1px solid var(--border);transition:background .1s}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+tbody td{padding:9px 11px;vertical-align:middle}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.bd{background:rgba(185,242,255,.15);color:var(--diamond);border:1px solid rgba(185,242,255,.25)}
+.bp{background:rgba(192,192,192,.15);color:var(--plat);border:1px solid rgba(192,192,192,.25)}
+.bg_{background:rgba(255,215,0,.15);color:var(--gold);border:1px solid rgba(255,215,0,.25)}
+.bb{background:rgba(255,255,255,.08);color:#ddd;border:1px solid rgba(255,255,255,.15)}
+.badge-green{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.25)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--red);border:1px solid rgba(248,81,73,.25)}
+.badge-amber{background:rgba(210,153,34,.15);color:var(--amber);border:1px solid rgba(210,153,34,.25)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent);border:1px solid rgba(88,166,255,.25)}
+.badge-purple{background:rgba(188,140,255,.15);color:var(--purple);border:1px solid rgba(188,140,255,.25)}
+.sbar{display:flex;align-items:center;gap:7px}
+.strack{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;min-width:50px}
+.sfill{height:100%;border-radius:3px}
+.snum{font-size:11px;font-weight:700;min-width:32px;text-align:right}
+.dtag{display:inline-block;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:600}
+.loading{display:flex;align-items:center;justify-content:center;padding:50px;color:var(--muted);gap:10px}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:50px;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px}
+.panel h3{font-size:13px;font-weight:600;margin-bottom:14px}
+.form-row{display:grid;gap:10px;margin-bottom:12px}
+.form-row.cols2{grid-template-columns:1fr 1fr}
+.form-row.cols3{grid-template-columns:1fr 1fr 1fr}
+.form-row.cols4{grid-template-columns:1fr 1fr 1fr 1fr}
+label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500}
+input[type=text],input[type=date],input[type=number]{width:100%}
+/* KPI */
+.kpi-hero{background:linear-gradient(135deg,#1a2744,#16213e);border:1px solid #2a3f6f;border-radius:var(--radius-lg);padding:28px;margin-bottom:20px;text-align:center}
+.kpi-score-big{font-size:64px;font-weight:800;line-height:1;margin:12px 0 6px}
+.kpi-band{font-size:18px;font-weight:600;margin-bottom:6px}
+.kpi-bonus span{color:var(--green);font-weight:700;font-size:18px}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px}
+.kpi-card-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.kpi-card-val{font-size:20px;font-weight:700;margin-bottom:3px}
+.kpi-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);font-size:12px}
+.kpi-row:last-child{border-bottom:none}
+.kpi-dim-header{background:var(--surface2);padding:8px 16px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+/* WA */
+.wa-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.intent-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.intent-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:7px 9px;font-size:11px;border-radius:6px;text-align:left}
+.intent-btn:hover{border-color:var(--accent);color:var(--text)}
+.intent-btn.active{background:rgba(88,166,255,.15);border-color:var(--accent);color:var(--accent)}
+.btn-generate{background:var(--accent);color:#0d1117;padding:10px;font-weight:700;font-size:13px;width:100%;border-radius:var(--radius)}
+.reply-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;min-height:180px;font-size:12px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.reply-placeholder{color:var(--muted);font-style:italic}
+/* Alert */
+.alert-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px}
+.alert-card.crit{border-left:3px solid var(--red)}
+.alert-card.risk{border-left:3px solid var(--amber)}
+.alert-pri{font-size:16px;font-weight:800;min-width:28px;text-align:center}
+.alert-body{flex:1}
+.alert-user{font-weight:700;font-size:14px;margin-bottom:3px}
+.alert-meta{display:flex;gap:7px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+.alert-action{font-size:12px;color:var(--muted);line-height:1.5}
+/* Log table */
+.log-table{font-size:11px}
+.log-table td{padding:7px 10px;border-top:1px solid var(--border);vertical-align:top;max-width:200px;word-break:break-word}
+.log-ts{color:var(--muted);white-space:nowrap;font-size:10px}
+/* Birthday */
+.bday-urgent{border-left:3px solid var(--red)}
+.bday-soon{border-left:3px solid var(--amber)}
+.bday-ok{border-left:3px solid var(--green)}
+/* Festival */
+.fest-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+.fest-days{min-width:60px;text-align:center;font-size:22px;font-weight:800}
+.fest-body{flex:1}
+.fest-name{font-weight:700;font-size:14px}
+.fest-date{font-size:12px;color:var(--muted)}
+/* Campaign */
+.campaign-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px}
+.campaign-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.campaign-title{font-weight:700;font-size:14px}
+.campaign-meta{font-size:11px;color:var(--muted)}
+.campaign-players{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.player-tag{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;display:flex;align-items:center;gap:5px}
+.player-tag button{background:none;color:var(--muted);font-size:12px;padding:0 2px;line-height:1}
+.player-tag button:hover{color:var(--red)}
+/* Setup */
+.setup-step{display:flex;gap:14px;margin-bottom:18px}
+.step-num{background:var(--accent);color:#0d1117;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.step-body h4{font-size:13px;font-weight:600;margin-bottom:5px}
+.step-body p{font-size:12px;color:var(--muted);line-height:1.6}
+.code-block{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-family:monospace;font-size:11px;color:var(--green);margin-top:6px;word-break:break-all}
+@media(max-width:768px){
+  .wa-grid{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .form-row.cols3,.form-row.cols4{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span>👑</span> SureWin VIP CRM</div>
+  <div class="topbar-right">
+    <div class="status-dot" id="sDot"></div>
+    <span class="status-text" id="sTxt">Not connected</span>
+    <button class="btn-sm btn-secondary" onclick="showSetup()">⚙️ Setup</button>
+    <button class="btn-sm btn-secondary" onclick="refreshAll()">↻ Refresh</button>
+  </div>
+</div>
+
+<div class="nav" id="navBar">
+  <button class="nav-tab active" onclick="showPage('targets',this)">🎯 Daily Targets</button>
+  <button class="nav-tab" onclick="showPage('scores',this)">🧠 VIP Scores</button>
+  <button class="nav-tab" onclick="showPage('kpi',this)">📊 KPI Scorecard</button>
+  <button class="nav-tab" onclick="showPage('churn',this)">🚨 Churn Alerts</button>
+  <button class="nav-tab" onclick="showPage('wa',this)">💬 WA Reply</button>
+  <button class="nav-tab" onclick="showPage('bday',this)">🎂 Birthdays</button>
+  <button class="nav-tab" onclick="showPage('festival',this)">🗓 Festivals</button>
+  <button class="nav-tab" onclick="showPage('bonus',this)">🧧 Bonus Tracker</button>
+  <button class="nav-tab" onclick="showPage('setup',this)">⚙️ Setup</button>
+</div>
+
+<div class="main">
+
+<!-- ═══ DAILY TARGETS ════════════════════════════════════ -->
+<div class="page active" id="page-targets">
+  <div class="stat-grid" id="tStats"></div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-title">🎯 Daily Targets</span>
+      <div class="table-tools">
+        <select class="filter-select" id="tTierFilter" onchange="renderTargets()">
+          <option value="ALL">All Tiers</option>
+          <option value="DIAMOND">Diamond</option>
+          <option value="PLATINUM">Platinum</option>
+          <option value="GOLD">Gold</option>
+        </select>
+        <button class="sort-btn" id="tSortDays" onclick="toggleSort('targets','days')">Sort: Days Inactive ↕</button>
+        <button class="sort-btn" id="tSortScore" onclick="toggleSort('targets','score')">Sort: Score ↕</button>
+      </div>
+    </div>
+    <div id="tTable"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+  </div>
+</div>
+
+<!-- ═══ VIP SCORES ════════════════════════════════════════ -->
+<div class="page" id="page-scores">
+  <div class="stat-grid" id="sStats"></div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-title">🧠 VIP Score Engine</span>
+      <div class="table-tools">
+        <input class="search-input" placeholder="Search username..." oninput="filterScores(this.value)">
+        <select class="filter-select" id="sTierFilter" onchange="filterScores('')">
+          <option value="ALL">All Tiers</option>
+          <option value="DIAMOND">Diamond</option>
+          <option value="PLATINUM">Platinum</option>
+          <option value="GOLD">Gold</option>
+        </select>
+        <button class="sort-btn active" id="sSortScore" onclick="toggleSort('scores','score')">Sort: Score ↓</button>
+        <button class="sort-btn" id="sSortDays" onclick="toggleSort('scores','days')">Sort: Days ↕</button>
+      </div>
+    </div>
+    <div id="sTable"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+  </div>
+</div>
+
+<!-- ═══ KPI SCORECARD ══════════════════════════════════════ -->
+<div class="page" id="page-kpi">
+  <div id="kpiContent"><div class="loading"><div class="spinner"></div> Loading KPI...</div></div>
+</div>
+
+<!-- ═══ CHURN ALERTS ═══════════════════════════════════════ -->
+<div class="page" id="page-churn">
+  <div class="stat-grid" id="cStats"></div>
+  <div class="table-tools" style="margin-bottom:12px;display:flex;gap:8px">
+    <select class="filter-select" id="cTierFilter" onchange="renderChurn()">
+      <option value="ALL">All Tiers</option><option value="DIAMOND">Diamond</option>
+      <option value="PLATINUM">Platinum</option><option value="GOLD">Gold</option>
+    </select>
+    <select class="filter-select" id="cRiskFilter" onchange="renderChurn()">
+      <option value="ALL">All Risks</option><option value="CRITICAL">Critical</option>
+      <option value="WINNER">Net Winner</option><option value="DORMANT">Dormant</option>
+      <option value="RISK">At Risk</option>
+    </select>
+  </div>
+  <div id="cList"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+</div>
+
+<!-- ═══ WA REPLY ═══════════════════════════════════════════ -->
+<div class="page" id="page-wa">
+  <div class="wa-grid">
+    <div class="panel">
+      <h3>💬 Message Input</h3>
+      <div class="form-row cols2">
+        <div><label>VIP Username</label><input type="text" id="waUser" placeholder="e.g. arron122"></div>
+        <div><label>Tier</label>
+          <select id="waTierSel"><option>PLATINUM</option><option>DIAMOND</option><option>GOLD</option><option>BLACK</option></select>
+        </div>
+      </div>
+      <div style="margin-bottom:10px"><label>Incoming Message</label><textarea id="waMsg" rows="5" placeholder="Paste VIP's WhatsApp message here..."></textarea></div>
+      <div style="margin-bottom:10px"><label>Select Intent</label><div class="intent-grid" id="intentGrid"></div></div>
+      <div class="form-row cols2">
+        <div><label>Tone</label>
+          <select id="waTone"><option>Warm &amp; Casual</option><option>Formal &amp; Premium</option><option>Urgent</option><option>Empathetic</option></select>
+        </div>
+        <div><label>Language</label>
+          <select id="waLang"><option>ZH+EN (Mixed)</option><option>ZH (Chinese)</option><option>EN (English)</option></select>
+        </div>
+      </div>
+      <button class="btn-generate" onclick="generateReply()">🤖 Generate Reply</button>
+    </div>
+    <div class="panel">
+      <h3>📝 Generated Reply</h3>
+      <div id="replyOut" class="reply-box"><span class="reply-placeholder">Generated reply appears here...</span></div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn-sm btn-secondary" onclick="copyReply()">📋 Copy</button>
+        <button class="btn-sm btn-green" onclick="logReply()">💾 Log This Reply</button>
+        <button class="btn-sm btn-secondary" onclick="clearWA()">🗑 Clear</button>
+      </div>
+      <div style="margin-top:16px">
+        <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px">Intent Guide</div>
+        <div style="font-size:11px;display:grid;grid-template-columns:120px 1fr;gap:4px 8px;color:var(--muted)">
+          <b style="color:var(--text)">Hesitation</b><span>Slow/vague replies, "maybe later"</span>
+          <b style="color:var(--text)">Loss Care</b><span>After big loss, emotional, quiet</span>
+          <b style="color:var(--text)">Big Win</b><span>Excited, sharing win</span>
+          <b style="color:var(--text)">Reactivation</b><span>First reply after long silence</span>
+          <b style="color:var(--text)">Upgrade Interest</b><span>Asking about tier benefits</span>
+          <b style="color:var(--text)">Complaint</b><span>Frustrated, dissatisfied</span>
+          <b style="color:var(--text)">No Reply F/U</b><span>Checking in after no response</span>
+          <b style="color:var(--text)">Birthday</b><span>Birthday context</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WA Log -->
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-title">📋 WA Conversation Log</span>
+      <div class="table-tools">
+        <input class="search-input" placeholder="Search by username..." oninput="filterWALog(this.value)">
+        <button class="btn-sm btn-secondary" onclick="exportWALog()">⬇ Export</button>
+        <button class="btn-sm btn-secondary" style="color:var(--red)" onclick="clearWALog()">🗑 Clear Log</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto"><table class="log-table">
+      <thead><tr>
+        <th>Timestamp</th><th>Username</th><th>Tier</th><th>Intent</th>
+        <th>Incoming Message</th><th>Reply Sent</th><th>Tone</th><th>Lang</th>
+      </tr></thead>
+      <tbody id="waLogBody"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══ BIRTHDAYS ══════════════════════════════════════════ -->
+<div class="page" id="page-bday">
+  <div class="stat-grid" id="bdayStats"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+    <div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">🎂 Upcoming Birthdays</span>
+          <div class="table-tools">
+            <select class="filter-select" id="bdayTier" onchange="renderBday()">
+              <option value="ALL">All Tiers</option><option value="DIAMOND">Diamond</option>
+              <option value="PLATINUM">Platinum</option><option value="GOLD">Gold</option>
+            </select>
+          </div>
+        </div>
+        <div id="bdayList"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <h3>➕ Add/Update Birthday</h3>
+        <div class="form-row cols2">
+          <div><label>Username</label><input type="text" id="bdayUser" placeholder="username"></div>
+          <div><label>Tier</label>
+            <select id="bdayTierAdd"><option>DIAMOND</option><option>PLATINUM</option><option>GOLD</option></select>
+          </div>
+        </div>
+        <div class="form-row cols2">
+          <div><label>Birthday</label><input type="date" id="bdayDate"></div>
+          <div><label>Gift Type</label>
+            <select id="bdayGift"><option>Luxury Gift</option><option>Nike Bag/Poker</option><option>Birthday Bonus Credit</option><option>Bespoke Gift</option><option>Custom</option></select>
+          </div>
+        </div>
+        <div class="form-row cols2">
+          <div><label>Budget (RM)</label><input type="number" id="bdayBudget" placeholder="388"></div>
+          <div><label>Status</label>
+            <select id="bdayStatus"><option>Planned</option><option>Ordered</option><option>Dispatched</option><option>Delivered</option><option>Done</option></select>
+          </div>
+        </div>
+        <div style="margin-bottom:10px"><label>Notes</label><input type="text" id="bdayNotes" placeholder="Any special notes..."></div>
+        <button class="btn-sm btn-green" style="width:100%;padding:9px" onclick="saveBday()">💾 Save Birthday</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FESTIVALS & CAMPAIGNS ══════════════════════════════ -->
+<div class="page" id="page-festival">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+    <div>
+      <div class="panel">
+        <h3>🗓 2026 Festival Calendar</h3>
+        <div id="festList"></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <h3>📣 Create Campaign</h3>
+        <div class="form-row cols2">
+          <div><label>Campaign Name</label><input type="text" id="campName" placeholder="CNY 2026 Exclusive"></div>
+          <div><label>Festival / Event</label><input type="text" id="campFest" placeholder="Chinese New Year"></div>
+        </div>
+        <div class="form-row cols2">
+          <div><label>Start Date</label><input type="date" id="campStart"></div>
+          <div><label>End Date</label><input type="date" id="campEnd"></div>
+        </div>
+        <div class="form-row cols2">
+          <div><label>Target Tier</label>
+            <select id="campTier"><option>ALL</option><option>DIAMOND</option><option>PLATINUM</option><option>GOLD</option></select>
+          </div>
+          <div><label>Bonus/Offer</label><input type="text" id="campOffer" placeholder="e.g. RM888 transfer bonus"></div>
+        </div>
+        <div style="margin-bottom:10px"><label>Campaign Notes</label><textarea id="campNotes" rows="2" placeholder="Campaign details..."></textarea></div>
+        <button class="btn-sm btn-green" style="width:100%;padding:9px" onclick="saveCampaign()">🚀 Create Campaign</button>
+      </div>
+
+      <div class="panel">
+        <h3>📊 Active Campaigns</h3>
+        <div id="campList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BONUS TRACKER ══════════════════════════════════════ -->
+<div class="page" id="page-bonus">
+  <div class="stat-grid" id="bonusStats"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+    <div class="panel">
+      <h3>➕ Add Bonus Entry</h3>
+      <div class="form-row cols2">
+        <div><label>Username</label><input type="text" id="bUser" placeholder="username"></div>
+        <div><label>Tier</label>
+          <select id="bTier"><option>DIAMOND</option><option>PLATINUM</option><option>GOLD</option><option>SILVER</option></select>
+        </div>
+      </div>
+      <div class="form-row cols3">
+        <div><label>Date</label><input type="date" id="bDate"></div>
+        <div><label>Month</label>
+          <select id="bMonth"><option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option><option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option></select>
+        </div>
+        <div><label>Bonus Type</label>
+          <select id="bType"><option>红包-输钱</option><option>Birthday Bonus</option><option>Reactivation</option><option>Upgrade Bonus</option><option>Festival Bonus</option><option>Weekly Deposit</option><option>Custom</option></select>
+        </div>
+      </div>
+      <div class="form-row cols3">
+        <div><label>Bonus (RM)</label><input type="number" id="bAmount" placeholder="888"></div>
+        <div><label>Win/Loss</label><select id="bWL"><option>Loss</option><option>Win</option></select></div>
+        <div><label>Status</label><select id="bStatus"><option>Active</option><option>Pending</option><option>Cancelled</option></select></div>
+      </div>
+      <div style="margin-bottom:10px"><label>Remarks / Notes</label><input type="text" id="bRemarks" placeholder="e.g. Player requested after losing RM8,000 session"></div>
+      <button class="btn-sm btn-green" style="width:100%;padding:9px" onclick="saveBonus()">💾 Add Bonus Entry</button>
+    </div>
+    <div class="panel">
+      <h3>🔍 Filter Bonus Records</h3>
+      <div class="form-row cols2">
+        <div><label>Month</label>
+          <select id="bFilterMonth" onchange="renderBonus()">
+            <option value="ALL">All Months</option>
+            <option>January</option><option>February</option><option>March</option><option>April</option>
+            <option>May</option><option>June</option><option>July</option><option>August</option>
+            <option>September</option><option>October</option><option>November</option><option>December</option>
+          </select>
+        </div>
+        <div><label>Tier</label>
+          <select id="bFilterTier" onchange="renderBonus()">
+            <option value="ALL">All Tiers</option><option>DIAMOND</option><option>PLATINUM</option><option>GOLD</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row cols2">
+        <div><label>Bonus Type</label>
+          <select id="bFilterType" onchange="renderBonus()">
+            <option value="ALL">All Types</option>
+            <option>红包-输钱</option><option>Birthday Bonus</option><option>Reactivation</option>
+            <option>Upgrade Bonus</option><option>Festival Bonus</option><option>Weekly Deposit</option>
+          </select>
+        </div>
+        <div><label>Search Username</label>
+          <input type="text" id="bSearch" placeholder="username..." oninput="renderBonus()">
+        </div>
+      </div>
+      <div id="bonusSummary" style="margin-top:8px;padding:12px;background:var(--surface2);border-radius:var(--radius);font-size:12px"></div>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-title">🧧 Bonus Records</span>
+      <div class="table-tools">
+        <button class="btn-sm btn-secondary" onclick="exportBonus()">⬇ Export</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto"><table>
+      <thead><tr>
+        <th>#</th><th>Date</th><th>Month</th><th>Username</th><th>Tier</th>
+        <th>Bonus Type</th><th>Bonus (RM)</th><th>Win/Loss</th><th>Status</th><th>Remarks</th><th>Action</th>
+      </tr></thead>
+      <tbody id="bonusBody"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══ SETUP ══════════════════════════════════════════════ -->
+<div class="page" id="page-setup">
+  <div class="panel">
+    <h3 style="font-size:15px;margin-bottom:18px">⚙️ Google Sheets Connection</h3>
+    <div class="setup-step"><div class="step-num">1</div><div class="step-body"><h4>Get your Sheet ID</h4><p>From your Google Sheet URL: docs.google.com/spreadsheets/d/<strong>SHEET_ID</strong>/edit</p></div></div>
+    <div class="setup-step"><div class="step-num">2</div><div class="step-body"><h4>Publish your Sheet</h4><p>File → Share → Publish to web → Entire Document → CSV → Publish<br>Set sharing to "Anyone with link can view"</p></div></div>
+    <div class="setup-step"><div class="step-num">3</div><div class="step-body"><h4>Enter details below and Save</h4></div></div>
+    <div class="form-row cols2">
+      <div><label>Google Sheet ID</label><input type="text" id="cfgId" placeholder="1amzDDbX..."></div>
+      <div><label>Agent Name</label><input type="text" id="cfgAgent" placeholder="Marcus"></div>
+    </div>
+    <div class="form-row cols3">
+      <div><label>Daily_Targets tab</label><input type="text" id="cfgTargets" value="Daily_Targets"></div>
+      <div><label>Score_Engine tab</label><input type="text" id="cfgScores" value="Score_Engine"></div>
+      <div><label>KPI_Dashboard tab</label><input type="text" id="cfgKPI" value="KPI_Dashboard"></div>
+    </div>
+    <div class="form-row cols3">
+      <div><label>Churn_Alerts tab</label><input type="text" id="cfgChurn" value="Churn_Alerts"></div>
+      <div><label>Birthday_Engine tab</label><input type="text" id="cfgBday" value="Birthday_Engine"></div>
+      <div><label>Bonus_Tracker tab</label><input type="text" id="cfgBonus" value="Bonus_Tracker"></div>
+    </div>
+    <button class="btn-sm btn-green" style="margin-top:4px;padding:9px 20px" onclick="saveConfig()">💾 Save & Connect</button>
+  </div>
+  <div class="panel">
+    <h3 style="font-size:15px;margin-bottom:18px">🚀 Deploy to GitHub Pages</h3>
+    <div class="setup-step"><div class="step-num">1</div><div class="step-body"><h4>Create GitHub repo</h4><p>github.com → New repository → upload index.html → commit</p></div></div>
+    <div class="setup-step"><div class="step-num">2</div><div class="step-body"><h4>Enable Pages</h4><p>Repository Settings → Pages → Source: main branch → Save</p></div></div>
+    <div class="setup-step"><div class="step-num">3</div><div class="step-body"><h4>Your live URL</h4><div class="code-block">https://YOUR-USERNAME.github.io/REPO-NAME/</div></div></div>
+    <div class="setup-step"><div class="step-num">4</div><div class="step-body"><h4>Embed in Notion</h4><p>Notion → /embed → paste GitHub Pages URL → Done. Live inside Notion.</p></div></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// CONFIG & STATE
+// ══════════════════════════════════════════════════════════════
+// ── DEFAULT CONFIG — edit these values, then upload to GitHub ──
+// Your Google Sheet ID (from the URL between /d/ and /edit)
+const DEFAULT_SHEET_ID = '1ac29rFPGTtVLIIzMjaWLR6U6pcVxVGXnYS9dPsVHzWo';
+const DEFAULT_AGENT    = 'Marcus';
+const DEFAULT_TABS = {
+  targets: 'Daily_Targets',
+  scores:  'Score_Engine',
+  kpi:     'KPI_Dashboard',
+  churn:   'Churn_Alerts',
+  bday:    'Birthday_Engine',
+  bonus:   'Bonus_Tracker',
+};
+// ── END DEFAULT CONFIG ─────────────────────────────────────────
+
+let CFG = {
+  sheetId:  ls('sw_id')      || DEFAULT_SHEET_ID,
+  agent:    ls('sw_agent')   || DEFAULT_AGENT,
+  targets:  ls('sw_targets') || DEFAULT_TABS.targets,
+  scores:   ls('sw_scores')  || DEFAULT_TABS.scores,
+  kpi:      ls('sw_kpi')     || DEFAULT_TABS.kpi,
+  churn:    ls('sw_churn')   || DEFAULT_TABS.churn,
+  bday:     ls('sw_bday')    || DEFAULT_TABS.bday,
+  bonus:    ls('sw_bonus')   || DEFAULT_TABS.bonus,
+};
+let DATA = {targets:[],scores:[],kpi:[],churn:[],bday:[],bonus:[]};
+let SORT = {targets:{col:'score',dir:-1}, scores:{col:'score',dir:-1}};
+let selectedIntent = '';
+let waLog = JSON.parse(ls('sw_walog') || '[]');
+let bdayData = JSON.parse(ls('sw_bday_local') || '[]');
+let bonusData = JSON.parse(ls('sw_bonus_local') || '[]');
+let campaigns = JSON.parse(ls('sw_campaigns') || '[]');
+
+function ls(k,v){ if(v!==undefined){localStorage.setItem(k,v);return v;} return localStorage.getItem(k)||''; }
+
+// ══════════════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════════════
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  else document.querySelectorAll('.nav-tab').forEach(t=>{ if(t.textContent.toLowerCase().includes(id)) t.classList.add('active'); });
+}
+function showSetup(){ showPage('setup', document.querySelectorAll('.nav-tab')[8]); }
+
+// ══════════════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════════════
+function saveConfig(){
+  CFG.sheetId = document.getElementById('cfgId').value.trim();
+  CFG.agent   = document.getElementById('cfgAgent').value.trim() || 'Marcus';
+  CFG.targets = document.getElementById('cfgTargets').value.trim() || 'Daily_Targets';
+  CFG.scores  = document.getElementById('cfgScores').value.trim()  || 'Score_Engine';
+  CFG.kpi     = document.getElementById('cfgKPI').value.trim()     || 'KPI_Dashboard';
+  CFG.churn   = document.getElementById('cfgChurn').value.trim()   || 'Churn_Alerts';
+  CFG.bday    = document.getElementById('cfgBday').value.trim()    || 'Birthday_Engine';
+  CFG.bonus   = document.getElementById('cfgBonus').value.trim()   || 'Bonus_Tracker';
+  Object.entries(CFG).forEach(([k,v])=>ls('sw_'+k,v));
+  refreshAll();
+}
+function loadCfgUI(){
+  document.getElementById('cfgId').value      = CFG.sheetId;
+  document.getElementById('cfgAgent').value   = CFG.agent;
+  document.getElementById('cfgTargets').value = CFG.targets;
+  document.getElementById('cfgScores').value  = CFG.scores;
+  document.getElementById('cfgKPI').value     = CFG.kpi;
+  document.getElementById('cfgChurn').value   = CFG.churn;
+  document.getElementById('cfgBday').value    = CFG.bday;
+  document.getElementById('cfgBonus').value   = CFG.bonus;
+}
+
+// ══════════════════════════════════════════════════════════════
+// FETCH
+// ══════════════════════════════════════════════════════════════
+async function fetchSheet(tab){
+  if(!CFG.sheetId) return null;
+  const url = `https://docs.google.com/spreadsheets/d/${CFG.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
+  try{
+    const res = await fetch(url);
+    if(!res.ok) return null;
+    return parseCSV(await res.text());
+  }catch(e){ return null; }
+}
+function parseCSV(text){
+  return text.trim().split('\n').map(line=>{
+    const row=[];let cur='';let q=false;
+    for(const c of line){
+      if(c==='"'){q=!q;continue;}
+      if(c===','&&!q){row.push(cur.trim());cur='';continue;}
+      cur+=c;
+    }
+    row.push(cur.trim());
+    return row;
+  });
+}
+function setStatus(ok,msg){ document.getElementById('sDot').style.background=ok?'var(--green)':'var(--red)'; document.getElementById('sTxt').textContent=msg; }
+async function refreshAll(){
+  if(!CFG.sheetId){setStatus(false,'Setup required');return;}
+  setStatus(false,'Connecting...');
+  const [t,s,k,c,b,bon] = await Promise.all([
+    fetchSheet(CFG.targets), fetchSheet(CFG.scores),
+    fetchSheet(CFG.kpi),     fetchSheet(CFG.churn),
+    fetchSheet(CFG.bday),    fetchSheet(CFG.bonus),
+  ]);
+  if(!t&&!s){setStatus(false,'Connection failed — check Sheet ID and make sure sheet is published');return;}
+  setStatus(true,`Live • ${new Date().toLocaleTimeString()}`);
+  DATA.targets=t||[]; DATA.scores=s||[]; DATA.kpi=k||[];
+  DATA.churn=c||[];   DATA.bday=b||[];   DATA.bonus=bon||[];
+  renderTargets(); renderScores(); renderKPI(); renderChurn(); renderBday(); renderBonus();
+}
+
+// ══════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════
+function fc(headers,...names){ for(const n of names){ const i=headers.findIndex(h=>h&&h.toLowerCase().replace(/\s/g,'').includes(n.toLowerCase().replace(/\s/g,''))); if(i>=0)return i; } return -1; }
+function tierBadge(t){ t=(t||'').toUpperCase(); if(t.includes('DIAMOND'))return`<span class="badge bd">💎 ${t}</span>`; if(t.includes('PLATINUM'))return`<span class="badge bp">⬡ ${t}</span>`; if(t.includes('GOLD'))return`<span class="badge bg_">★ ${t}</span>`; if(t.includes('BLACK'))return`<span class="badge bb">◆ ${t}</span>`; return`<span class="badge">${t}</span>`; }
+function sBar(val,max=100){ const n=parseFloat(val)||0; const c=n>=85?'var(--green)':n>=70?'var(--amber)':n>=50?'var(--accent)':'var(--red)'; return`<div class="sbar"><div class="strack"><div class="sfill" style="width:${Math.min(100,(n/max*100)).toFixed(0)}%;background:${c}"></div></div><span class="snum" style="color:${c}">${n.toFixed(1)}</span></div>`; }
+function dTag(d){ const n=parseInt(d); if(isNaN(n))return`<span class="dtag" style="background:var(--surface2);color:var(--muted)">${d||'—'}</span>`; const bg=n<=7?'rgba(63,185,80,.15)':n<=14?'rgba(210,153,34,.15)':n<=30?'rgba(210,100,20,.15)':'rgba(248,81,73,.15)'; const fg=n<=7?'var(--green)':n<=14?'var(--amber)':n<=30?'#e06020':'var(--red)'; return`<span class="dtag" style="background:${bg};color:${fg}">${n}d</span>`; }
+function wlFmt(v){ const n=parseFloat((v||'').replace(/,/g,'')); if(isNaN(n))return'—'; const fmt=Math.abs(n).toLocaleString('en-MY',{maximumFractionDigits:0}); return n<0?`<span style="color:var(--green);font-weight:600">-RM${fmt}</span>`:`<span style="color:var(--red);font-weight:600">+RM${fmt}</span>`; }
+function rmFmt(v){ const n=parseFloat((v||'').replace(/,/g,'')); return isNaN(n)?'—':'RM '+n.toLocaleString('en-MY',{maximumFractionDigits:0}); }
+function matchTier(val,filter){ if(filter==='ALL')return true; return (val||'').toUpperCase().includes(filter); }
+
+function toggleSort(page,col){
+  if(SORT[page].col===col) SORT[page].dir*=-1;
+  else{ SORT[page].col=col; SORT[page].dir=-1; }
+  document.querySelectorAll(`[id^="${page[0]}Sort"]`).forEach(b=>b.classList.remove('active'));
+  const btnId=`${page[0]}Sort${col.charAt(0).toUpperCase()+col.slice(1)}`;
+  const btn=document.getElementById(btnId);
+  if(btn){ btn.classList.add('active'); btn.textContent=btn.textContent.replace(/[↑↓↕]/g,'')+(SORT[page].dir===1?'↑':'↓'); }
+  if(page==='targets')renderTargets();
+  else renderScores();
+}
+
+// ══════════════════════════════════════════════════════════════
+// DAILY TARGETS
+// ══════════════════════════════════════════════════════════════
+function renderTargets(){
+  const rows=DATA.targets; if(!rows||rows.length<2){document.getElementById('tTable').innerHTML=noData('🎯');return;}
+  const H=rows[0];
+  const iUser=fc(H,'username','login'),iTier=fc(H,'tier'),iScore=fc(H,'vipscore','score'),
+        iPred=fc(H,'predicted','pred'),iBand=fc(H,'band','priority'),
+        iDays=fc(H,'daysinactive','days'),iDep=fc(H,'deposit'),iWL=fc(H,'win','loss'),
+        iAct=fc(H,'action','today'),iPhone=fc(H,'phone');
+  let data=rows.slice(1).filter(r=>r[iUser]);
+  const tierF=document.getElementById('tTierFilter').value;
+  data=data.filter(r=>matchTier(r[iTier],tierF));
+  const {col,dir}=SORT.targets;
+  data.sort((a,b)=>{
+    let av=col==='days'?parseInt(a[iDays])||999:parseFloat(a[iScore])||0;
+    let bv=col==='days'?parseInt(b[iDays])||999:parseFloat(b[iScore])||0;
+    return(av-bv)*dir;
+  });
+  const elite=data.filter(r=>parseFloat(r[iPred]||0)>=85).length;
+  const urgent=data.filter(r=>parseFloat((r[iWL]||'').replace(/,/g,''))>20000).length;
+  document.getElementById('tStats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Targets Today</div><div class="stat-value c-accent">${data.length}</div></div>
+    <div class="stat-card"><div class="stat-label">💎 Elite (≥85%)</div><div class="stat-value c-green">${elite}</div></div>
+    <div class="stat-card"><div class="stat-label">🚨 Net Winners</div><div class="stat-value c-red">${urgent}</div><div class="stat-sub">Call today</div></div>
+    <div class="stat-card"><div class="stat-label">Agent</div><div class="stat-value" style="font-size:18px">${CFG.agent}</div><div class="stat-sub">${new Date().toLocaleDateString()}</div></div>`;
+  document.getElementById('tTable').innerHTML=`<div style="overflow-x:auto"><table>
+    <thead><tr><th>#</th><th>Username</th><th>Tier</th><th onclick="toggleSort('targets','score')">VIP Score ↕</th><th>Predicted %</th><th>Priority</th><th onclick="toggleSort('targets','days')">Inactive ↕</th><th>Total Dep</th><th>Win/Loss</th><th>Today's Action</th></tr></thead>
+    <tbody>${data.slice(0,25).map((r,i)=>`<tr>
+      <td style="color:var(--muted);font-weight:600">${i+1}</td>
+      <td style="font-weight:700">${r[iUser]||'—'}</td>
+      <td>${tierBadge(r[iTier])}</td>
+      <td>${sBar(r[iScore])}</td>
+      <td>${sBar(r[iPred])}</td>
+      <td>${bandTag(r[iPred])}</td>
+      <td>${dTag(String(r[iDays]||'').replace(' days','').replace('d',''))}</td>
+      <td style="font-size:11px">${rmFmt(r[iDep])}</td>
+      <td>${wlFmt(r[iWL])}</td>
+      <td style="font-size:11px;color:var(--muted);max-width:250px">${r[iAct]||'—'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+function bandTag(pred){ const p=parseFloat(pred); if(p>=85)return`<span class="badge badge-green">💎 Elite</span>`; if(p>=70)return`<span class="badge badge-blue">🥇 Strong</span>`; if(p>=50)return`<span class="badge badge-amber">🥈 Moderate</span>`; return`<span class="badge badge-red">🥉 Weak</span>`; }
+
+// ══════════════════════════════════════════════════════════════
+// VIP SCORES
+// ══════════════════════════════════════════════════════════════
+let allScoreRows=[],scoreHeaders=[];
+function renderScores(){
+  const rows=DATA.scores; if(!rows||rows.length<2){document.getElementById('sTable').innerHTML=noData('🧠');return;}
+  scoreHeaders=rows[0]; allScoreRows=rows.slice(1).filter(r=>r[1]);
+  const iScore=fc(scoreHeaders,'vipscore');
+  const elite=allScoreRows.filter(r=>parseFloat(r[iScore]||0)>=85).length;
+  const strong=allScoreRows.filter(r=>{const s=parseFloat(r[iScore]||0);return s>=70&&s<85;}).length;
+  const weak=allScoreRows.filter(r=>parseFloat(r[iScore]||0)<50).length;
+  document.getElementById('sStats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Total VIPs</div><div class="stat-value c-accent">${allScoreRows.length}</div></div>
+    <div class="stat-card"><div class="stat-label">💎 Elite ≥85</div><div class="stat-value c-green">${elite}</div></div>
+    <div class="stat-card"><div class="stat-label">🥇 Strong 70-84</div><div class="stat-value c-amber">${strong}</div></div>
+    <div class="stat-card"><div class="stat-label">🥉 Weak &lt;50</div><div class="stat-value c-red">${weak}</div></div>`;
+  filterScores('');
+}
+function filterScores(q){
+  const tierF=document.getElementById('sTierFilter').value;
+  const search=(document.querySelector('#page-scores .search-input')||{}).value||q||'';
+  let filtered=allScoreRows.filter(r=>matchTier(r[fc(scoreHeaders,'tier')],tierF) && (r[1]||'').toLowerCase().includes(search.toLowerCase()));
+  const H=scoreHeaders;
+  const iUser=fc(H,'username','login'),iTier=fc(H,'tier'),iScore=fc(H,'vipscore'),
+        iPred=fc(H,'predicted'),iBand=fc(H,'band','priority'),iDays=fc(H,'daysinactive','days'),iWL=fc(H,'win','loss');
+  const {col,dir}=SORT.scores;
+  filtered.sort((a,b)=>{
+    let av=col==='days'?parseInt(a[iDays])||999:parseFloat(a[iScore])||0;
+    let bv=col==='days'?parseInt(b[iDays])||999:parseFloat(b[iScore])||0;
+    return(av-bv)*dir;
+  });
+  document.getElementById('sTable').innerHTML=`<div style="overflow-x:auto"><table>
+    <thead><tr><th>#</th><th>Username</th><th>Tier</th><th onclick="toggleSort('scores','score')">VIP Score ↕</th><th>Predicted %</th><th>Priority Band</th><th onclick="toggleSort('scores','days')">Days Inactive ↕</th><th>Win/Loss</th></tr></thead>
+    <tbody>${filtered.map((r,i)=>`<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td style="font-weight:700">${r[iUser]||'—'}</td>
+      <td>${tierBadge(r[iTier])}</td>
+      <td>${sBar(r[iScore])}</td>
+      <td>${sBar(r[iPred])}</td>
+      <td style="font-size:11px">${r[iBand]||'—'}</td>
+      <td>${dTag(String(r[iDays]||'').replace(/\s*days?/i,''))}</td>
+      <td>${wlFmt(r[iWL])}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// KPI SCORECARD — uses proper formula from KPI framework
+// Revenue 30% + Retention 50% + Activities 20%
+// ══════════════════════════════════════════════════════════════
+const KPI_FRAMEWORK = {
+  revenue: [
+    {key:'VIP NGR 占比',  target:30,  dir:'higher', unit:'%'},
+    {key:'VIP ARPU',      target:3,   dir:'higher', unit:'x'},
+    {key:'VIP TD 占比',   target:45,  dir:'higher', unit:'%'},
+  ],
+  retention: [
+    {key:'VIP 留存率',  target:80,  dir:'higher', unit:'%'},
+    {key:'VIP 活跃率',  target:75,  dir:'higher', unit:'%'},
+    {key:'VIP 流失率',  target:10,  dir:'lower',  unit:'%'},
+  ],
+  activities: [
+    {key:'活动 ROI',   target:120, dir:'higher', unit:'%'},
+    {key:'活动参与率', target:50,  dir:'higher', unit:'%'},
+  ],
+};
+const KPI_WEIGHTS = {revenue:0.30, retention:0.50, activities:0.20};
+
+function calcKPIScore(actual,target,dir){
+  const a=parseFloat(actual); if(isNaN(a)||a===0) return null;
+  const ratio = dir==='lower' ? target/a : a/target;
+  if(ratio>=1.2) return 100;
+  if(ratio>=1.0) return 90;
+  if(ratio>=0.9) return 75;
+  if(ratio>=0.8) return 60;
+  return 40;
+}
+
+function renderKPI(){
+  const rows=DATA.kpi;
+  // Try to extract actuals from sheet
+  const actuals={};
+  if(rows&&rows.length>1){
+    rows.forEach(row=>{
+      const label=String(row[0]||'').trim();
+      const actual=String(row[2]||'').trim();
+      if(label&&actual&&actual!=='→ Enter manually'&&actual!=='—'&&actual!==''){
+        actuals[label]=actual;
+      }
+    });
+  }
+
+  // Manual input fields for KPIs not auto-calculated
+  const kpiInputValues = JSON.parse(ls('sw_kpi_inputs')||'{}');
+
+  const el=document.getElementById('kpiContent');
+  el.innerHTML=`
+    <div class="panel" style="margin-bottom:16px">
+      <h3>✏️ Enter KPI Actuals (manual input for activities)</h3>
+      <div class="form-row cols4">
+        <div><label>活动 ROI (%)</label><input type="number" id="ki_roi" placeholder="120" value="${kpiInputValues['roi']||''}"></div>
+        <div><label>活动参与率 (%)</label><input type="number" id="ki_part" placeholder="50" value="${kpiInputValues['part']||''}"></div>
+        <div><label>VIP NGR 占比 (%)</label><input type="number" id="ki_ngr" placeholder="49.1" value="${kpiInputValues['ngr']||actuals['VIP NGR 占比']||'49.1'}"></div>
+        <div><label>VIP ARPU (x avg)</label><input type="number" id="ki_arpu" placeholder="14.1" value="${kpiInputValues['arpu']||actuals['VIP ARPU']||'14.1'}"></div>
+      </div>
+      <div class="form-row cols4">
+        <div><label>VIP TD 占比 (%)</label><input type="number" id="ki_td" placeholder="44.3" value="${kpiInputValues['td']||actuals['VIP TD 占比']||'44.3'}"></div>
+        <div><label>VIP 留存率 (%)</label><input type="number" id="ki_ret" placeholder="78.3" value="${kpiInputValues['ret']||actuals['VIP 留存率']||''}"></div>
+        <div><label>VIP 活跃率 (%)</label><input type="number" id="ki_act" placeholder="60.9" value="${kpiInputValues['act']||actuals['VIP 活跃率']||''}"></div>
+        <div><label>VIP 流失率 (%)</label><input type="number" id="ki_churn" placeholder="21.7" value="${kpiInputValues['churn']||actuals['VIP 流失率']||''}"></div>
+      </div>
+      <button class="btn-sm btn-green" onclick="calcAndRenderKPI()">📊 Calculate Score</button>
+    </div>
+    <div id="kpiResult"></div>`;
+  calcAndRenderKPI();
+}
+
+function calcAndRenderKPI(){
+  const get=id=>parseFloat(document.getElementById(id)?.value)||null;
+  const inputs={ngr:get('ki_ngr'),arpu:get('ki_arpu'),td:get('ki_td'),ret:get('ki_ret'),act:get('ki_act'),churnV:get('ki_churn'),roi:get('ki_roi'),part:get('ki_part')};
+  ls('sw_kpi_inputs',JSON.stringify({ngr:inputs.ngr,arpu:inputs.arpu,td:inputs.td,ret:inputs.ret,act:inputs.act,churn:inputs.churnV,roi:inputs.roi,part:inputs.part}));
+  const kpiActuals=[
+    [inputs.ngr,30,'higher','%','VIP NGR 占比','Revenue 贡献'],
+    [inputs.arpu,3,'higher','x','VIP ARPU','Revenue 贡献'],
+    [inputs.td,45,'higher','%','VIP TD 占比','Revenue 贡献'],
+    [inputs.ret,80,'higher','%','VIP 留存率','Retention 留存'],
+    [inputs.act,75,'higher','%','VIP 活跃率','Retention 留存'],
+    [inputs.churnV,10,'lower','%','VIP 流失率','Retention 留存'],
+    [inputs.roi,120,'higher','%','活动 ROI','Activities 活动'],
+    [inputs.part,50,'higher','%','活动参与率','Activities 活动'],
+  ];
+  const revScores=kpiActuals.slice(0,3).map(([a,t,d])=>calcKPIScore(a,t,d)).filter(s=>s!==null);
+  const retScores=kpiActuals.slice(3,6).map(([a,t,d])=>calcKPIScore(a,t,d)).filter(s=>s!==null);
+  const actScores=kpiActuals.slice(6,8).map(([a,t,d])=>calcKPIScore(a,t,d)).filter(s=>s!==null);
+  const revAvg=revScores.length?revScores.reduce((a,b)=>a+b,0)/revScores.length:0;
+  const retAvg=retScores.length?retScores.reduce((a,b)=>a+b,0)/retScores.length:0;
+  const actAvg=actScores.length?actScores.reduce((a,b)=>a+b,0)/actScores.length:0;
+  const total=(revAvg*0.30)+(retAvg*0.50)+(actAvg*0.20);
+  const band=total>=95?'🏆 Outstanding':total>=90?'⭐ Excellent':total>=80?'✅ Good':total>=70?'📈 Needs Improvement':'❌ Below Standard';
+  const bonus=total>=95?2400:total>=90?2000:total>=80?1600:total>=70?1400:0;
+  const sc=total>=85?'var(--green)':total>=70?'var(--amber)':total>=50?'var(--accent)':'var(--red)';
+  const gap=total>=95?'🏆 Max tier!':total>=90?`${(95-total).toFixed(1)} pts to Outstanding (RM2,400)`:total>=80?`${(90-total).toFixed(1)} pts to Excellent (RM2,000)`:total>=70?`${(80-total).toFixed(1)} pts to Good (RM1,600)`:`${(70-total).toFixed(1)} pts to unlock bonus`;
+
+  document.getElementById('kpiResult').innerHTML=`
+    <div class="kpi-hero">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Overall Score — ${new Date().toLocaleDateString('en-GB',{month:'long',year:'numeric'})}</div>
+      <div class="kpi-score-big" style="color:${sc}">${total.toFixed(1)}</div>
+      <div class="kpi-band">${band}</div>
+      <div class="kpi-bonus">Bonus: <span>RM ${bonus.toLocaleString()}</span></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px">${gap}</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-card-label">Revenue Score (30%)</div><div class="kpi-card-val" style="color:${revAvg>=75?'var(--green)':'var(--amber)'}">${revAvg.toFixed(1)}</div><div style="font-size:11px;color:var(--muted)">Weighted: ${(revAvg*0.30).toFixed(1)} pts</div></div>
+      <div class="kpi-card"><div class="kpi-card-label">Retention Score (50%)</div><div class="kpi-card-val" style="color:${retAvg>=75?'var(--green)':'var(--amber)'}">${retAvg.toFixed(1)}</div><div style="font-size:11px;color:var(--muted)">Weighted: ${(retAvg*0.50).toFixed(1)} pts</div></div>
+      <div class="kpi-card"><div class="kpi-card-label">Activities Score (20%)</div><div class="kpi-card-val" style="color:${actAvg>=75?'var(--green)':'var(--red)'}">${actAvg>0?actAvg.toFixed(1):'—'}</div><div style="font-size:11px;color:var(--muted)">Weighted: ${(actAvg*0.20).toFixed(1)} pts</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-header"><span class="table-title">KPI Breakdown — Effective KPI Setting</span></div>
+      ${['Revenue 贡献 (30%)','Retention 留存 (50%)','Activities 活动 (20%)'].map((dim,di)=>`
+        <div class="kpi-dim-header">${dim}</div>
+        ${kpiActuals.slice(di*3,di===2?8:di*3+3).map(([actual,target,dir,unit,label],ki)=>{
+          const score=calcKPIScore(actual,target,dir);
+          const sc2=score===null?'var(--muted)':score>=90?'var(--green)':score>=70?'var(--amber)':score>=50?'var(--accent)':'var(--red)';
+          const ach=actual?((dir==='lower'?target/actual:actual/target)*100).toFixed(0)+'%':'—';
+          const tDisp=dir==='lower'?`≤ ${target}${unit}`:`≥ ${target}${unit}`;
+          return`<div class="kpi-row">
+            <span style="flex:1;font-size:12px">${label}</span>
+            <span style="width:80px;text-align:center;font-size:11px;color:var(--muted)">${tDisp}</span>
+            <span style="width:110px;text-align:center;font-size:12px;font-weight:600">${actual!=null?actual+unit:'✏️ Enter'}</span>
+            <span style="width:60px;text-align:center;font-size:12px;font-weight:700;color:${sc2}">${score||'—'}</span>
+            <span style="width:60px;text-align:center;font-size:11px;color:var(--muted)">${ach}</span>
+          </div>`;
+        }).join('')}
+      `).join('')}
+    </div>
+    <div class="table-wrap" style="margin-top:14px">
+      <div class="table-header"><span class="table-title">💰 Bonus Payout Schedule</span></div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr)">
+        ${[['≥95','RM 2,400','Outstanding','var(--green)'],['90–94','RM 2,000','Excellent','var(--amber)'],['80–89','RM 1,600','Good','var(--accent)'],['70–79','RM 1,400','Improving','var(--muted)'],['<70','RM 0','Below Std','var(--red)']].map(([r,b,bd,c])=>`
+          <div style="padding:14px;text-align:center;border-right:1px solid var(--border)${Math.round(total)>=parseInt(r)||r==='<70'&&total<70?';background:rgba(255,255,255,.03)':''}">
+            <div style="font-size:11px;color:var(--muted)">${r}</div>
+            <div style="font-size:16px;font-weight:700;color:${c};margin:3px 0">${b}</div>
+            <div style="font-size:10px;color:var(--muted)">${bd}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// CHURN ALERTS
+// ══════════════════════════════════════════════════════════════
+function renderChurn(){
+  const rows=DATA.churn; if(!rows||rows.length<2){document.getElementById('cList').innerHTML=noData('🚨');return;}
+  const H=rows[0];
+  const iPri=fc(H,'priority','#'),iUser=fc(H,'username','login'),iTier=fc(H,'tier'),
+        iDays=fc(H,'days'),iRisk=fc(H,'risk'),iDep=fc(H,'deposit'),iAct=fc(H,'action','recommended');
+  const tierF=document.getElementById('cTierFilter').value;
+  const riskF=document.getElementById('cRiskFilter').value;
+  let data=rows.slice(1).filter(r=>r[iUser]).filter(r=>matchTier(r[iTier],tierF));
+  if(riskF!=='ALL') data=data.filter(r=>String(r[iRisk]||'').toUpperCase().includes(riskF));
+  const crit=data.filter(r=>String(r[iRisk]||'').includes('CRITICAL')||String(r[iRisk]||'').includes('WINNER')).length;
+  const dorm=data.filter(r=>String(r[iRisk]||'').includes('DORMANT')).length;
+  document.getElementById('cStats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Total Alerts</div><div class="stat-value c-red">${data.length}</div></div>
+    <div class="stat-card"><div class="stat-label">🔴 Critical</div><div class="stat-value c-red">${crit}</div></div>
+    <div class="stat-card"><div class="stat-label">🔴 Dormant</div><div class="stat-value c-amber">${dorm}</div></div>
+    <div class="stat-card"><div class="stat-label">🟠 At Risk</div><div class="stat-value c-amber">${data.length-crit-dorm}</div></div>`;
+  document.getElementById('cList').innerHTML=data.slice(0,25).map(r=>{
+    const risk=String(r[iRisk]||'').toLowerCase();
+    const cls=risk.includes('critical')||risk.includes('winner')?'crit':'risk';
+    return`<div class="alert-card ${cls}">
+      <div class="alert-pri" style="color:${cls==='crit'?'var(--red)':'var(--amber)'}">${r[iPri]||'!'}</div>
+      <div class="alert-body">
+        <div class="alert-user">${r[iUser]||'—'}</div>
+        <div class="alert-meta">${tierBadge(r[iTier])}<span class="badge ${cls==='crit'?'badge-red':'badge-amber'}">${r[iRisk]||'—'}</span>${dTag(String(r[iDays]||'').replace(' days',''))}<span style="font-size:11px;color:var(--muted)">${rmFmt(r[iDep])}</span></div>
+        <div class="alert-action">${r[iAct]||'—'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// WA REPLY GENERATOR
+// ══════════════════════════════════════════════════════════════
+const INTENTS=['Hesitation','Loss Care','Big Win','Reactivation','Upgrade Interest','Complaint','General Inquiry','No Reply Follow-up','Birthday','Thank You'];
+const SCRIPTS={
+  'Hesitation':{'ZH+EN':n=>`${n}，没关系的，不着急 😊 No rush at all!\n\n这个专属优惠是专门为你保留的 — reserved just for you.\n\n准备好了随时告诉我 / Just let me know whenever you're ready!`,'ZH':n=>`${n}，没关系的，不着急 😊 我只是想让你知道这个专属优惠是为你准备的。你随时准备好了再说，我在这里。`,'EN':n=>`Hey ${n}, no pressure at all 😊 I just wanted to make sure you knew about this exclusive offer — it's reserved specifically for you. Take your time, I'm here whenever you're ready.`},
+  'Loss Care':{'ZH+EN':n=>`${n}，辛苦了 🙏 I just wanted to check in on you.\n\n输赢都是游戏的一部分 — Wins and losses are part of the journey.\n\n最重要的是你好好的 / What matters most is that you're okay.\n\n有需要随时找我 — I'm always here for you.`,'ZH':n=>`${n}，最近辛苦了。输赢是游戏的一部分，重要的是你这个人 🙏 休息一下，好好照顾自己。有需要随时找我。`,'EN':n=>`Hey ${n}, I just wanted to check in 🙏 Wins and losses are part of the game — what matters most is that you're okay. Take it easy, I'm always here for you.`},
+  'Big Win':{'ZH+EN':n=>`Wow ${n}！🎉 恭喜你！Congratulations!\n\n太厉害了 — That was incredible! 好好享受 Enjoy it!\n\n下周有个专属 VIP 活动 — We have an exclusive event next week. 感兴趣告诉我 / Let me know if you're interested!`,'ZH':n=>`哇 ${n}！🎉 太厉害了！恭喜你！好好享受这个时刻！我们下周有个专属活动 — 感兴趣吗？`,'EN':n=>`Wow ${n}! 🎉 Congratulations on the win! Amazing! Enjoy it 💪 We have an exclusive VIP event next week — would you be interested?`},
+  'Reactivation':{'ZH+EN':n=>`${n}，好久不见！😊 Hey, it's been a while!\n\n一直都有在想你怎么样了 — I've been thinking about you.\n\n我们有个专属优惠等着你 / We have something special reserved for you.\n\n随时欢迎回来 — You're always welcome back!`,'ZH':n=>`${n}，好久不见 😊 一直在想你最近怎么样了。我们有个专属优惠等着你 — 欢迎随时回来。`,'EN':n=>`Hey ${n}, it's been a while! 😊 I've been thinking about you. We've got something special reserved just for you whenever you're ready to come back.`},
+  'Upgrade Interest':{'ZH+EN':n=>`${n}，好消息！🏆 Great news!\n\n以你目前的存款，你完全符合升级条件 — You're absolutely eligible!\n\n升级后：更高返水、专属礼品、更多提款次数 / Better rebates, exclusive gifts.\n\n我帮你处理 — I can sort it right now. 方便吗？/ Are you free?`,'ZH':n=>`${n}，你完全符合升级条件！🏆 升级后更高返水、专属礼品、更多提款次数。我帮你处理，很简单。现在方便吗？`,'EN':n=>`${n}, great news — you're absolutely eligible to upgrade! 🏆 Better rebates, exclusive gifts, more daily withdrawals. I can handle the process for you right now — are you available?`},
+  'Complaint':{'ZH+EN':n=>`${n}，非常抱歉 🙏 I'm really sorry about this.\n\n你的感受完全可以理解 — Your frustration is completely valid.\n\n告诉我更多细节？/ Can you share more details?\n\n我会亲自跟进 — I will personally make sure this gets resolved.`,'ZH':n=>`${n}，非常抱歉 🙏 你的感受完全可以理解。告诉我更多细节，我会亲自跟进确保解决。`,'EN':n=>`${n}, I'm really sorry to hear this 🙏 I completely understand your frustration. Can you share more details so I can personally look into this and make sure it gets resolved?`},
+  'General Inquiry':{'ZH+EN':n=>`${n}，好问题！Great question!\n\n作为我们的 VIP，你有专属优惠和活动 — As our VIP, you have exclusive access.\n\n你具体想了解什么？/ What are you looking for?\n\n我来帮你找最适合的 — I'll find the best option for you!`,'ZH':n=>`${n}，好问题！作为我们的 VIP，你享有专属优惠。你具体想了解哪方面？我帮你找最合适的。`,'EN':n=>`Great question ${n}! As one of our VIP members, you have access to exclusive offers. What specifically are you looking for? I'll find the best fit for you.`},
+  'No Reply Follow-up':{'ZH+EN':n=>`${n}，只是想 check in 一下 😊\n\n上次的消息不知道你有没有看到 — Not sure if my last message got through.\n\n随时都可以回复 — No rush, I'm here whenever you're ready!`,'ZH':n=>`${n}，只是想确认一下 😊 上次的消息不知道你看到了没？没关系，随时回复我。`,'EN':n=>`Hey ${n}, just wanted to circle back 😊 Not sure if my last message came through — no worries! I'm here whenever you're ready.`},
+  'Birthday':{'ZH+EN':n=>`${n}，生日快乐！🎂🎉 Happy Birthday!!\n\n希望今天是你最棒的一天 — Wishing you the most amazing day!\n\n我们为你准备了专属生日惊喜 — We have a special surprise for you.\n\n稍后发给你细节！/ Details coming shortly!\n\n健康快乐 🥂 Cheers to you!`,'ZH':n=>`${n}，生日快乐！🎂🎉 希望今天是你最特别的一天！我们准备了专属生日礼物 — 稍后发给你细节！健康快乐 🥂`,'EN':n=>`Happy Birthday ${n}!! 🎂🎉 Wishing you the most amazing day! We have a special birthday surprise for you — I'll share the details shortly. Cheers to you! 🥂`},
+  'Thank You':{'ZH+EN':n=>`${n}，谢谢你！😊 Thank you so much!\n\n这对我真的很有意义 — That genuinely means a lot.\n\n服务你是我的荣幸 / It's always my pleasure.\n\n有需要随时找我！/ I'm always here for you! 🙏`,'ZH':n=>`${n}，谢谢你的好话！😊 这对我很有意义。服务你是我的荣幸。有需要随时找我 🙏`,'EN':n=>`${n}, thank you so much — that genuinely means a lot! 😊 It's always my pleasure to take care of you. I'm always here for you! 🙏`},
+};
+function initIntents(){ document.getElementById('intentGrid').innerHTML=INTENTS.map(i=>`<button class="intent-btn" onclick="selIntent('${i}',this)">${i}</button>`).join(''); }
+function selIntent(i,btn){ selectedIntent=i; document.querySelectorAll('.intent-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+function generateReply(){
+  const user=document.getElementById('waUser').value.trim()||'there';
+  const msg=document.getElementById('waMsg').value.trim();
+  const tone=document.getElementById('waTone').value;
+  const lang=document.getElementById('waLang').value;
+  const intent=selectedIntent||'General Inquiry';
+  if(!msg){document.getElementById('replyOut').innerHTML='<span style="color:var(--red)">Please paste a message first.</span>';return;}
+  const scripts=SCRIPTS[intent]||SCRIPTS['General Inquiry'];
+  const lk=lang.startsWith('ZH+E')?'ZH+EN':lang.startsWith('ZH')?'ZH':'EN';
+  let reply=(scripts[lk]||scripts['ZH+EN']||scripts['EN'])(user);
+  if(tone==='Formal & Premium') reply=reply.replace(/😊|🎉|💪|🥂|🙏|🎂/g,'').replace(/\bHey\b/g,'Dear');
+  if(tone==='Urgent') reply='⚡ '+reply+'\n\n请尽快回复 / Please reply at your earliest convenience.';
+  document.getElementById('replyOut').textContent=reply;
+}
+function copyReply(){ const t=document.getElementById('replyOut').textContent; if(!t||t.includes('appears here'))return; navigator.clipboard.writeText(t).then(()=>{const b=event.target;b.textContent='✅ Copied!';setTimeout(()=>b.textContent='📋 Copy',2000);}); }
+function logReply(){
+  const user=document.getElementById('waUser').value.trim();
+  const msg=document.getElementById('waMsg').value.trim();
+  const reply=document.getElementById('replyOut').textContent;
+  const intent=selectedIntent||'—';
+  const tone=document.getElementById('waTone').value;
+  const lang=document.getElementById('waLang').value;
+  const tier=document.getElementById('waTierSel').value;
+  if(!msg||reply.includes('appears here')){alert('Nothing to log — generate a reply first.');return;}
+  const entry={ts:new Date().toLocaleString(),user,tier,intent,msg,reply,tone,lang};
+  waLog.unshift(entry);
+  ls('sw_walog',JSON.stringify(waLog.slice(0,500)));
+  renderWALog(waLog);
+  alert('✅ Reply logged!');
+}
+function renderWALog(data){
+  const filtered=typeof data==='string'?waLog.filter(r=>(r.user||'').toLowerCase().includes(data.toLowerCase())):data;
+  document.getElementById('waLogBody').innerHTML=filtered.map((r,i)=>`<tr>
+    <td class="log-ts">${r.ts}</td>
+    <td style="font-weight:700;white-space:nowrap">${r.user||'—'}</td>
+    <td>${tierBadge(r.tier)}</td>
+    <td><span class="badge badge-blue">${r.intent}</span></td>
+    <td style="max-width:180px;font-size:11px;color:var(--muted)">${(r.msg||'').substring(0,80)}${(r.msg||'').length>80?'...':''}</td>
+    <td style="max-width:180px;font-size:11px">${(r.reply||'').substring(0,100)}${(r.reply||'').length>100?'...':''}</td>
+    <td style="font-size:10px;color:var(--muted)">${r.tone||'—'}</td>
+    <td style="font-size:10px;color:var(--muted)">${r.lang||'—'}</td>
+  </tr>`).join('');
+}
+function filterWALog(q){ renderWALog(waLog.filter(r=>(r.user||'').toLowerCase().includes(q.toLowerCase()))); }
+function clearWALog(){ if(!confirm('Clear all WA logs?'))return; waLog=[]; ls('sw_walog','[]'); renderWALog([]); }
+function exportWALog(){ const csv=['Timestamp,Username,Tier,Intent,Incoming Message,Reply,Tone,Language',...waLog.map(r=>[r.ts,r.user,r.tier,r.intent,(r.msg||'').replace(/,/g,' '),(r.reply||'').replace(/,/g,' ').replace(/\n/g,' '),r.tone,r.lang].join(','))].join('\n'); dl(csv,'wa_log.csv'); }
+function clearWA(){ document.getElementById('waUser').value=''; document.getElementById('waMsg').value=''; document.getElementById('replyOut').innerHTML='<span class="reply-placeholder">Generated reply appears here...</span>'; document.querySelectorAll('.intent-btn').forEach(b=>b.classList.remove('active')); selectedIntent=''; }
+
+// ══════════════════════════════════════════════════════════════
+// BIRTHDAYS
+// ══════════════════════════════════════════════════════════════
+function renderBday(){
+  // Merge sheet data + local data
+  const sheetBday=[];
+  if(DATA.bday&&DATA.bday.length>1){
+    const H=DATA.bday[0];
+    const iUser=fc(H,'username','login'),iTier=fc(H,'tier'),iBday=fc(H,'birthday'),
+          iDays=fc(H,'daystobday','days'),iGift=fc(H,'gift'),iBudget=fc(H,'budget'),
+          iStatus=fc(H,'status');
+    DATA.bday.slice(1).forEach(r=>{
+      if(!r[iUser]) return;
+      sheetBday.push({user:r[iUser],tier:r[iTier],bday:r[iBday],daysLeft:calcDaysLeft(r[iBday]),gift:r[iGift],budget:r[iBudget],status:r[iStatus],source:'sheet'});
+    });
+  }
+  const localBday=bdayData.map(b=>({...b,daysLeft:calcDaysLeft(b.bday),source:'local'}));
+  const all=[...sheetBday,...localBday].sort((a,b)=>(parseInt(a.daysLeft)||999)-(parseInt(b.daysLeft)||999));
+  const tierF=document.getElementById('bdayTier').value;
+  const filtered=all.filter(b=>matchTier(b.tier,tierF));
+  const thisMonth=filtered.filter(b=>parseInt(b.daysLeft)>=0&&parseInt(b.daysLeft)<=30).length;
+  const next7=filtered.filter(b=>parseInt(b.daysLeft)>=0&&parseInt(b.daysLeft)<=7).length;
+  document.getElementById('bdayStats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Total Birthdays</div><div class="stat-value c-accent">${filtered.length}</div></div>
+    <div class="stat-card"><div class="stat-label">🎂 This Month (30d)</div><div class="stat-value c-amber">${thisMonth}</div></div>
+    <div class="stat-card"><div class="stat-label">🚨 Next 7 Days</div><div class="stat-value c-red">${next7}</div></div>
+    <div class="stat-card"><div class="stat-label">Gifts Planned</div><div class="stat-value c-green">${filtered.filter(b=>b.status==='Planned'||b.status==='Ordered').length}</div></div>`;
+  document.getElementById('bdayList').innerHTML=filtered.length?filtered.map(b=>{
+    const d=parseInt(b.daysLeft);
+    const cls=d<=7?'bday-urgent':d<=30?'bday-soon':'bday-ok';
+    const dLabel=d<=0?'🎉 TODAY!':d===1?'Tomorrow':`${d} days`;
+    const statusBg=b.status==='Done'?'var(--green)':b.status==='Delivered'?'var(--accent)':b.status==='Ordered'?'var(--amber)':'var(--muted)';
+    return`<div class="alert-card ${cls}" style="margin-bottom:8px">
+      <div class="alert-pri" style="color:${d<=7?'var(--red)':d<=30?'var(--amber)':'var(--green)'}; font-size:13px">${dLabel}</div>
+      <div class="alert-body">
+        <div class="alert-user">${b.user}</div>
+        <div class="alert-meta">${tierBadge(b.tier)}<span style="font-size:11px;color:var(--muted)">${b.bday||'—'}</span>${b.budget?`<span style="font-size:11px;color:var(--muted)">RM ${b.budget}</span>`:''}</div>
+        <div style="display:flex;gap:8px;align-items:center"><span style="font-size:11px">${b.gift||'—'}</span><span style="font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(255,255,255,.08);color:${statusBg}">${b.status||'Planned'}</span>${b.notes?`<span style="font-size:10px;color:var(--muted)">${b.notes}</span>`:''}</div>
+      </div>
+      ${b.source==='local'?`<button class="btn-sm btn-secondary" style="font-size:10px;color:var(--red)" onclick="deleteBday('${b.user}')">🗑</button>`:''}
+    </div>`;
+  }).join(''):`<div class="empty"><div class="empty-icon">🎂</div><p>No birthdays found.</p></div>`;
+}
+function calcDaysLeft(bdayStr){
+  if(!bdayStr) return 999;
+  try{
+    const d=new Date(bdayStr); if(isNaN(d)) return 999;
+    const today=new Date(); today.setHours(0,0,0,0);
+    let next=new Date(today.getFullYear(),d.getMonth(),d.getDate());
+    if(next<today) next.setFullYear(today.getFullYear()+1);
+    return Math.floor((next-today)/86400000);
+  }catch(e){return 999;}
+}
+function saveBday(){
+  const user=document.getElementById('bdayUser').value.trim();
+  if(!user){alert('Username required');return;}
+  bdayData=bdayData.filter(b=>b.user!==user);
+  bdayData.push({user,tier:document.getElementById('bdayTierAdd').value,bday:document.getElementById('bdayDate').value,gift:document.getElementById('bdayGift').value,budget:document.getElementById('bdayBudget').value,status:document.getElementById('bdayStatus').value,notes:document.getElementById('bdayNotes').value,added:new Date().toISOString()});
+  ls('sw_bday_local',JSON.stringify(bdayData));
+  renderBday();
+  alert(`✅ Birthday saved for ${user}`);
+}
+function deleteBday(user){ bdayData=bdayData.filter(b=>b.user!==user); ls('sw_bday_local',JSON.stringify(bdayData)); renderBday(); }
+
+// ══════════════════════════════════════════════════════════════
+// FESTIVALS & CAMPAIGNS
+// ══════════════════════════════════════════════════════════════
+const FESTIVALS_2026=[
+  {code:'CNY',name:'春节 Chinese New Year',date:'2026-02-17',cat:'Core',color:'var(--red)'},
+  {code:'LANTERN',name:'元宵节 Lantern Festival',date:'2026-03-03',cat:'Core',color:'var(--amber)'},
+  {code:'QINGMING',name:'清明节 Qing Ming',date:'2026-04-04',cat:'Soft',color:'var(--muted)'},
+  {code:'LABOUR',name:'Labour Day',date:'2026-05-01',cat:'Commercial',color:'var(--accent)'},
+  {code:'520',name:'520 我爱你 Love Day',date:'2026-05-20',cat:'Commercial',color:'var(--purple)'},
+  {code:'DRAGON',name:'端午节 Dragon Boat',date:'2026-06-19',cat:'Core',color:'var(--green)'},
+  {code:'QIXI',name:'七夕 Chinese Valentine',date:'2026-08-13',cat:'Commercial',color:'var(--purple)'},
+  {code:'MERDEKA',name:'Merdeka Day',date:'2026-08-31',cat:'Commercial',color:'var(--accent)'},
+  {code:'MALAYSIA',name:'Malaysia Day',date:'2026-09-16',cat:'Commercial',color:'var(--accent)'},
+  {code:'MID',name:'中秋节 Mid-Autumn',date:'2026-09-25',cat:'Core',color:'var(--amber)'},
+  {code:'DOUBLE9',name:'重阳节 Double Ninth',date:'2026-10-17',cat:'Soft',color:'var(--muted)'},
+  {code:'DIWALI',name:'Deepavali',date:'2026-10-28',cat:'Core',color:'var(--gold)'},
+  {code:'XMAS',name:'Christmas',date:'2026-12-25',cat:'Commercial',color:'var(--green)'},
+  {code:'NYE',name:'New Year Eve',date:'2026-12-31',cat:'Core',color:'var(--accent)'},
+];
+function renderFestivals(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  document.getElementById('festList').innerHTML=FESTIVALS_2026.map(f=>{
+    const d=new Date(f.date); const days=Math.floor((d-today)/86400000);
+    const past=days<0;
+    return`<div class="fest-card" style="opacity:${past?.5:1}">
+      <div class="fest-days" style="color:${past?'var(--muted)':days<=14?'var(--red)':days<=30?'var(--amber)':'var(--green)'}">${past?'Past':days+'d'}</div>
+      <div class="fest-body">
+        <div class="fest-name" style="color:${f.color}">${f.name}</div>
+        <div class="fest-date">${f.date} · <span class="badge ${f.cat==='Core'?'badge-red':f.cat==='Commercial'?'badge-blue':'badge-amber'}">${f.cat}</span></div>
+      </div>
+      ${!past?`<button class="btn-sm btn-secondary" style="font-size:11px" onclick="preFillCampaign('${f.name}','${f.date}')">📣 Campaign</button>`:''}
+    </div>`;
+  }).join('');
+  renderCampaigns();
+}
+function preFillCampaign(name,date){
+  document.getElementById('campFest').value=name;
+  document.getElementById('campStart').value=date;
+  document.getElementById('campName').focus();
+}
+function saveCampaign(){
+  const name=document.getElementById('campName').value.trim();
+  if(!name){alert('Campaign name required');return;}
+  campaigns.push({id:Date.now(),name,fest:document.getElementById('campFest').value,start:document.getElementById('campStart').value,end:document.getElementById('campEnd').value,tier:document.getElementById('campTier').value,offer:document.getElementById('campOffer').value,notes:document.getElementById('campNotes').value,players:[],created:new Date().toISOString()});
+  ls('sw_campaigns',JSON.stringify(campaigns));
+  renderCampaigns();
+  alert(`✅ Campaign "${name}" created!`);
+}
+function renderCampaigns(){
+  document.getElementById('campList').innerHTML=campaigns.length?campaigns.map((c,i)=>`
+    <div class="campaign-card">
+      <div class="campaign-header">
+        <div>
+          <div class="campaign-title">${c.name}</div>
+          <div class="campaign-meta">${c.fest||''} · ${c.start||''}${c.end?` → ${c.end}`:''} · ${c.tier} · ${c.offer||''}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="badge badge-green" style="font-size:11px">${c.players.length} players</span>
+          <button class="btn-sm btn-secondary" style="color:var(--red);font-size:11px" onclick="deleteCampaign(${i})">🗑</button>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">
+        Success rate: <b style="color:var(--green)">${c.players.length>0?Math.round(c.players.filter(p=>p.converted).length/c.players.length*100)+'%':'—'}</b>
+        · Participants: <b>${c.players.length}</b>
+        · Converted: <b style="color:var(--green)">${c.players.filter(p=>p.converted).length}</b>
+      </div>
+      <div class="campaign-players">${c.players.map((p,pi)=>`<span class="player-tag">${tierBadge(p.tier)} ${p.user}${p.converted?' ✅':''}<button onclick="removePlayer(${i},${pi})">×</button></span>`).join('')}</div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <input type="text" id="campPlayer_${i}" placeholder="Add username..." style="height:28px;flex:1;font-size:11px">
+        <select id="campPlayerTier_${i}" style="height:28px;width:110px;font-size:11px"><option>DIAMOND</option><option>PLATINUM</option><option>GOLD</option></select>
+        <select id="campPlayerConv_${i}" style="height:28px;width:110px;font-size:11px"><option value="0">Participated</option><option value="1">✅ Converted</option></select>
+        <button class="btn-sm btn-green" onclick="addPlayerToCampaign(${i})">+ Add</button>
+      </div>
+      ${c.notes?`<div style="font-size:11px;color:var(--muted);margin-top:6px">${c.notes}</div>`:''}
+    </div>`).join(''):`<div class="empty" style="padding:20px"><p style="font-size:13px">No campaigns yet. Create one above.</p></div>`;
+}
+function addPlayerToCampaign(i){
+  const user=document.getElementById(`campPlayer_${i}`).value.trim();
+  if(!user) return;
+  const tier=document.getElementById(`campPlayerTier_${i}`).value;
+  const converted=document.getElementById(`campPlayerConv_${i}`).value==='1';
+  campaigns[i].players.push({user,tier,converted,added:new Date().toISOString()});
+  ls('sw_campaigns',JSON.stringify(campaigns));
+  renderCampaigns();
+}
+function removePlayer(ci,pi){ campaigns[ci].players.splice(pi,1); ls('sw_campaigns',JSON.stringify(campaigns)); renderCampaigns(); }
+function deleteCampaign(i){ if(!confirm('Delete this campaign?'))return; campaigns.splice(i,1); ls('sw_campaigns',JSON.stringify(campaigns)); renderCampaigns(); }
+
+// ══════════════════════════════════════════════════════════════
+// BONUS TRACKER
+// ══════════════════════════════════════════════════════════════
+function renderBonus(){
+  // Merge sheet + local
+  const sheetBonus=[];
+  if(DATA.bonus&&DATA.bonus.length>1){
+    const H=DATA.bonus[0];
+    const iNum=fc(H,'#'),iMonth=fc(H,'month'),iDate=fc(H,'date'),iUser=fc(H,'username','login'),
+          iTier=fc(H,'tier'),iType=fc(H,'bonustype','type'),iAmt=fc(H,'bonus(rm)','bonus'),
+          iWL=fc(H,'win','loss'),iStatus=fc(H,'status'),iRem=fc(H,'remarks','notes');
+    DATA.bonus.slice(1).forEach(r=>{
+      if(!r[iUser]) return;
+      sheetBonus.push({num:r[iNum],month:r[iMonth],date:r[iDate],user:r[iUser],tier:r[iTier],type:r[iType],amount:r[iAmt],wl:r[iWL],status:r[iStatus],remarks:r[iRem],source:'sheet'});
+    });
+  }
+  let all=[...sheetBonus,...bonusData.map(b=>({...b,source:'local'}))];
+  const mf=document.getElementById('bFilterMonth').value;
+  const tf=document.getElementById('bFilterTier').value;
+  const typef=document.getElementById('bFilterType').value;
+  const search=document.getElementById('bSearch').value.toLowerCase();
+  let filtered=all.filter(b=>
+    (mf==='ALL'||b.month===mf)&&
+    (tf==='ALL'||matchTier(b.tier,tf))&&
+    (typef==='ALL'||(b.type||'').includes(typef))&&
+    (b.user||'').toLowerCase().includes(search)
+  );
+  const totalBonus=filtered.reduce((s,b)=>s+(parseFloat(b.amount)||0),0);
+  const totalCount=filtered.length;
+  document.getElementById('bonusStats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Total Records</div><div class="stat-value c-accent">${totalCount}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Bonus</div><div class="stat-value c-amber">RM ${totalBonus.toLocaleString('en-MY',{maximumFractionDigits:0})}</div></div>
+    <div class="stat-card"><div class="stat-label">🧧 红包 Count</div><div class="stat-value c-red">${filtered.filter(b=>(b.type||'').includes('红包')).length}</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Bonus</div><div class="stat-value" style="font-size:18px">RM ${totalCount?Math.round(totalBonus/totalCount).toLocaleString():'0'}</div></div>`;
+  document.getElementById('bonusSummary').innerHTML=`<b>Filtered: ${filtered.length} records</b> · Total bonus: RM ${totalBonus.toLocaleString('en-MY',{maximumFractionDigits:0})} · ${mf!=='ALL'?mf:'All months'} · ${tf!=='ALL'?tf:'All tiers'}`;
+  document.getElementById('bonusBody').innerHTML=filtered.map((b,i)=>{
+    const wlBg=String(b.wl||'').toLowerCase()==='loss'?'rgba(248,81,73,.12)':'rgba(63,185,80,.12)';
+    const wlFg=String(b.wl||'').toLowerCase()==='loss'?'var(--red)':'var(--green)';
+    return`<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td style="font-size:11px">${b.date||'—'}</td>
+      <td><span class="badge badge-blue">${b.month||'—'}</span></td>
+      <td style="font-weight:700">${b.user||'—'}</td>
+      <td>${tierBadge(b.tier)}</td>
+      <td><span class="badge badge-purple">${b.type||'—'}</span></td>
+      <td style="font-weight:700;color:var(--amber)">RM ${parseFloat(b.amount||0).toLocaleString('en-MY',{maximumFractionDigits:0})}</td>
+      <td><span style="padding:2px 7px;border-radius:10px;font-size:11px;background:${wlBg};color:${wlFg};font-weight:600">${b.wl||'—'}</span></td>
+      <td style="font-size:11px">${b.status||'—'}</td>
+      <td style="font-size:11px;color:var(--muted);max-width:180px">${b.remarks||'—'}</td>
+      <td>${b.source==='local'?`<button class="btn-sm btn-secondary" style="font-size:10px;color:var(--red)" onclick="deleteBonus(${i})">🗑</button>`:'<span style="font-size:10px;color:var(--muted)">Sheet</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+function saveBonus(){
+  const user=document.getElementById('bUser').value.trim();
+  if(!user){alert('Username required');return;}
+  bonusData.push({num:bonusData.length+1,month:document.getElementById('bMonth').value,date:document.getElementById('bDate').value,user,tier:document.getElementById('bTier').value,type:document.getElementById('bType').value,amount:document.getElementById('bAmount').value,wl:document.getElementById('bWL').value,status:document.getElementById('bStatus').value,remarks:document.getElementById('bRemarks').value,added:new Date().toISOString()});
+  ls('sw_bonus_local',JSON.stringify(bonusData));
+  renderBonus();
+  alert(`✅ Bonus entry added for ${user}`);
+  document.getElementById('bUser').value=''; document.getElementById('bAmount').value=''; document.getElementById('bRemarks').value='';
+}
+function deleteBonus(i){ const localIdx=i-DATA.bonus.length+1; if(localIdx>=0){bonusData.splice(localIdx,1);ls('sw_bonus_local',JSON.stringify(bonusData));renderBonus();} }
+function exportBonus(){ 
+  const all=[...(DATA.bonus||[]).slice(1),...bonusData];
+  const csv=['#,Date,Month,Username,Tier,Type,Amount,Win/Loss,Status,Remarks',...bonusData.map((b,i)=>[i+1,b.date,b.month,b.user,b.tier,b.type,b.amount,b.wl,b.status,(b.remarks||'').replace(/,/g,' ')].join(','))].join('\n');
+  dl(csv,'bonus_tracker.csv');
+}
+
+// ══════════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════════
+function noData(icon){ return`<div class="empty"><div class="empty-icon">${icon}</div><p>No data. Connect your Google Sheet in <a href="#" onclick="showSetup()" style="color:var(--accent)">Setup</a>.</p></div>`; }
+function dl(content,filename){ const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(content); a.download=filename; a.click(); }
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+window.addEventListener('load',()=>{
+  loadCfgUI();
+  initIntents();
+  renderWALog(waLog);
+  renderFestivals();
+  renderBday();
+  renderBonus();
+  refreshAll(); // Auto-connects using DEFAULT_SHEET_ID
+});
+</script>
+</body>
+</html>
