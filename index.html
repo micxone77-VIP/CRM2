@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SureWin VIP CRM — AI Powered</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a2236;
+  --bg-card-hover: #1f2a42;
+  --bg-input: #0f1629;
+  --border: #2a3550;
+  --border-light: #354163;
+  --text-primary: #e8ecf4;
+  --text-secondary: #8b95ad;
+  --text-muted: #5a6580;
+  --accent-gold: #f0b938;
+  --accent-gold-dim: rgba(240,185,56,0.15);
+  --accent-blue: #3b82f6;
+  --accent-blue-dim: rgba(59,130,246,0.12);
+  --accent-green: #10b981;
+  --accent-green-dim: rgba(16,185,129,0.12);
+  --accent-red: #ef4444;
+  --accent-red-dim: rgba(239,68,68,0.12);
+  --accent-purple: #a78bfa;
+  --accent-purple-dim: rgba(167,139,250,0.12);
+  --accent-orange: #f97316;
+  --accent-orange-dim: rgba(249,115,22,0.12);
+  --diamond: #b9f2ff;
+  --platinum: #c0c0c0;
+  --gold: #ffd700;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --transition: 0.2s ease;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:14px; }
+body {
+  font-family: var(--font);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--border-light); }
+
+/* ===== LAYOUT ===== */
+.app { display:flex; height:100vh; }
+.sidebar {
+  width:240px; min-width:240px;
+  background: var(--bg-secondary);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  overflow-y:auto;
+  z-index:100;
+}
+.sidebar-header {
+  padding:20px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+}
+.sidebar-header .logo {
+  width:36px; height:36px;
+  background: linear-gradient(135deg, var(--accent-gold), #e89a00);
+  border-radius: var(--radius-sm);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+}
+.sidebar-header h1 {
+  font-size:15px; font-weight:700;
+  background: linear-gradient(135deg, var(--accent-gold), #fff);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.sidebar-header .subtitle { font-size:10px; color:var(--text-muted); font-weight:500; letter-spacing:1px; text-transform:uppercase; }
+
+.sidebar-nav { flex:1; padding:8px; }
+.nav-section { margin-bottom:4px; }
+.nav-section-title {
+  font-size:10px; font-weight:700; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:1.2px;
+  padding:12px 12px 6px;
+}
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 12px; border-radius:var(--radius-sm);
+  cursor:pointer; transition:var(--transition);
+  font-size:13px; font-weight:500; color:var(--text-secondary);
+  position:relative;
+}
+.nav-item:hover { background:var(--bg-card); color:var(--text-primary); }
+.nav-item.active {
+  background: var(--accent-gold-dim);
+  color: var(--accent-gold);
+  font-weight:600;
+}
+.nav-item.active::before {
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:3px; height:20px; background:var(--accent-gold); border-radius:0 3px 3px 0;
+}
+.nav-item .icon { font-size:16px; width:22px; text-align:center; }
+.nav-item .badge {
+  margin-left:auto; font-size:10px; font-weight:700;
+  padding:2px 7px; border-radius:10px;
+  background:var(--accent-red-dim); color:var(--accent-red);
+}
+.nav-item .badge.ai {
+  background: linear-gradient(135deg, var(--accent-purple-dim), var(--accent-blue-dim));
+  color:var(--accent-purple);
+}
+
+.sidebar-footer {
+  padding:12px 16px;
+  border-top:1px solid var(--border);
+}
+.connection-status {
+  display:flex; align-items:center; gap:8px;
+  font-size:11px; color:var(--text-muted);
+}
+.status-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--accent-red);
+}
+.status-dot.connected { background:var(--accent-green); box-shadow:0 0 8px rgba(16,185,129,0.5); }
+
+/* ===== MAIN CONTENT ===== */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.topbar {
+  height:56px; padding:0 24px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  background:var(--bg-secondary);
+}
+.topbar-title { font-size:16px; font-weight:700; display:flex; align-items:center; gap:10px; }
+.topbar-actions { display:flex; align-items:center; gap:10px; }
+
+.content { flex:1; overflow-y:auto; padding:20px 24px; }
+
+/* ===== TAB PANELS ===== */
+.tab-panel { display:none; animation:fadeIn 0.3s ease; }
+.tab-panel.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== CARDS ===== */
+.card {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:16px;
+}
+.card-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px;
+}
+.card-title { font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.card-subtitle { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+/* ===== STAT GRID ===== */
+.stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:20px; }
+.stat-card {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px;
+  transition:var(--transition);
+}
+.stat-card:hover { border-color:var(--border-light); transform:translateY(-1px); }
+.stat-label { font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.stat-value { font-size:24px; font-weight:800; margin-top:6px; font-family:var(--mono); }
+.stat-change { font-size:11px; margin-top:4px; font-weight:600; }
+.stat-change.up { color:var(--accent-green); }
+.stat-change.down { color:var(--accent-red); }
+
+/* ===== TABLES ===== */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:12px; }
+thead th {
+  padding:10px 12px; text-align:left;
+  font-size:10px; font-weight:700; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:0.8px;
+  border-bottom:1px solid var(--border);
+  white-space:nowrap;
+  position:sticky; top:0; background:var(--bg-card); z-index:1;
+}
+tbody td {
+  padding:10px 12px;
+  border-bottom:1px solid rgba(42,53,80,0.4);
+  white-space:nowrap;
+}
+tbody tr { transition:var(--transition); }
+tbody tr:hover { background:var(--bg-card-hover); }
+
+/* ===== TIER BADGES ===== */
+.tier { padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+.tier.diamond { background:rgba(185,242,255,0.12); color:var(--diamond); }
+.tier.platinum { background:rgba(192,192,192,0.12); color:var(--platinum); }
+.tier.gold { background:rgba(255,215,0,0.12); color:var(--gold); }
+
+.risk { padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700; }
+.risk.critical { background:var(--accent-red-dim); color:var(--accent-red); }
+.risk.high { background:var(--accent-orange-dim); color:var(--accent-orange); }
+.risk.medium { background:var(--accent-gold-dim); color:var(--accent-gold); }
+.risk.low { background:var(--accent-green-dim); color:var(--accent-green); }
+
+.priority { padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700; }
+.priority.p1 { background:var(--accent-red-dim); color:var(--accent-red); }
+.priority.p2 { background:var(--accent-orange-dim); color:var(--accent-orange); }
+.priority.p3 { background:var(--accent-gold-dim); color:var(--accent-gold); }
+
+/* ===== BUTTONS ===== */
+.btn {
+  padding:8px 16px; border-radius:var(--radius-xs);
+  font-size:12px; font-weight:600; font-family:var(--font);
+  cursor:pointer; transition:var(--transition);
+  border:1px solid transparent;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.btn-primary { background:var(--accent-gold); color:#000; border-color:var(--accent-gold); }
+.btn-primary:hover { background:#e0a820; }
+.btn-secondary { background:transparent; color:var(--text-secondary); border-color:var(--border); }
+.btn-secondary:hover { border-color:var(--border-light); color:var(--text-primary); }
+.btn-ai {
+  background: linear-gradient(135deg, #7c3aed, #3b82f6);
+  color:#fff; border:none;
+}
+.btn-ai:hover { opacity:0.9; }
+.btn-sm { padding:5px 10px; font-size:11px; }
+.btn-xs { padding:3px 8px; font-size:10px; }
+
+/* ===== INPUTS ===== */
+input, select, textarea {
+  background:var(--bg-input);
+  border:1px solid var(--border);
+  color:var(--text-primary);
+  padding:8px 12px;
+  border-radius:var(--radius-xs);
+  font-size:12px;
+  font-family:var(--font);
+  transition:var(--transition);
+  width:100%;
+}
+input:focus, select:focus, textarea:focus { outline:none; border-color:var(--accent-gold); }
+textarea { resize:vertical; min-height:80px; }
+label { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px; }
+
+.form-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:12px; }
+.form-group { display:flex; flex-direction:column; gap:4px; }
+
+/* ===== FILTER BAR ===== */
+.filter-bar { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.filter-chip {
+  padding:5px 14px; border-radius:20px;
+  font-size:11px; font-weight:600;
+  background:var(--bg-input); border:1px solid var(--border);
+  color:var(--text-secondary); cursor:pointer; transition:var(--transition);
+}
+.filter-chip:hover { border-color:var(--border-light); color:var(--text-primary); }
+.filter-chip.active { background:var(--accent-gold-dim); border-color:var(--accent-gold); color:var(--accent-gold); }
+
+/* ===== AI CHAT ===== */
+.ai-panel {
+  display:flex; flex-direction:column;
+  height: calc(100vh - 96px);
+}
+.ai-messages {
+  flex:1; overflow-y:auto;
+  padding:20px;
+  display:flex; flex-direction:column; gap:12px;
+}
+.ai-msg {
+  max-width:85%;
+  padding:12px 16px;
+  border-radius:var(--radius);
+  font-size:13px; line-height:1.6;
+  animation:fadeIn 0.3s ease;
+}
+.ai-msg.user {
+  align-self:flex-end;
+  background:var(--accent-blue);
+  color:#fff;
+  border-bottom-right-radius:4px;
+}
+.ai-msg.assistant {
+  align-self:flex-start;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-bottom-left-radius:4px;
+}
+.ai-msg.system {
+  align-self:center;
+  background:var(--accent-purple-dim);
+  color:var(--accent-purple);
+  font-size:11px; font-weight:600;
+  max-width:none;
+}
+.ai-msg pre { background:var(--bg-input); padding:10px; border-radius:var(--radius-xs); overflow-x:auto; margin:8px 0; font-family:var(--mono); font-size:11px; }
+.ai-input-bar {
+  padding:16px 20px;
+  border-top:1px solid var(--border);
+  display:flex; gap:10px;
+  background:var(--bg-secondary);
+}
+.ai-input-bar input { flex:1; }
+.ai-typing { display:flex; gap:4px; padding:4px 0; }
+.ai-typing span { width:6px; height:6px; background:var(--text-muted); border-radius:50%; animation:typing 1.4s infinite; }
+.ai-typing span:nth-child(2) { animation-delay:0.2s; }
+.ai-typing span:nth-child(3) { animation-delay:0.4s; }
+@keyframes typing { 0%,60%,100%{opacity:0.3;transform:translateY(0)} 30%{opacity:1;transform:translateY(-4px)} }
+
+/* ===== WA REPLY ===== */
+.wa-container { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.wa-reply-box {
+  background:var(--bg-input);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px;
+  font-size:13px; line-height:1.7;
+  min-height:200px;
+  white-space:pre-wrap;
+  position:relative;
+}
+.wa-reply-box .placeholder { color:var(--text-muted); font-style:italic; }
+
+/* ===== KPI GAUGE ===== */
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+.kpi-card {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+}
+.kpi-card .kpi-title { font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:8px; }
+.kpi-card .kpi-value { font-size:32px; font-weight:800; font-family:var(--mono); }
+.kpi-bar { height:6px; background:var(--bg-input); border-radius:3px; margin-top:10px; overflow:hidden; }
+.kpi-bar-fill { height:100%; border-radius:3px; transition:width 0.6s ease; }
+
+/* ===== BRIEFING ===== */
+.briefing-card {
+  background: linear-gradient(135deg, rgba(167,139,250,0.08), rgba(59,130,246,0.08));
+  border:1px solid rgba(167,139,250,0.2);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:16px;
+}
+.briefing-card h3 { font-size:14px; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.briefing-card p { font-size:13px; line-height:1.7; color:var(--text-secondary); }
+.briefing-card ul { list-style:none; padding:0; }
+.briefing-card li { padding:8px 0; border-bottom:1px solid rgba(42,53,80,0.4); font-size:13px; display:flex; align-items:center; gap:8px; }
+.briefing-card li:last-child { border:none; }
+
+/* ===== FESTIVAL CALENDAR ===== */
+.festival-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+.festival-card {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px;
+  transition:var(--transition);
+}
+.festival-card:hover { border-color:var(--accent-gold); }
+.festival-date { font-size:10px; font-weight:700; color:var(--accent-gold); text-transform:uppercase; }
+.festival-name { font-size:13px; font-weight:600; margin-top:4px; }
+.festival-days { font-size:11px; color:var(--text-muted); margin-top:4px; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align:center; padding:60px 20px;
+  color:var(--text-muted);
+}
+.empty-state .icon { font-size:48px; margin-bottom:16px; opacity:0.5; }
+.empty-state p { font-size:13px; }
+
+/* ===== LOADING ===== */
+.loading-spinner {
+  display:flex; justify-content:center; padding:40px;
+}
+.spinner {
+  width:32px; height:32px;
+  border:3px solid var(--border);
+  border-top-color:var(--accent-gold);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media(max-width:768px) {
+  .sidebar { position:fixed; left:-260px; transition:0.3s ease; height:100vh; z-index:999; }
+  .sidebar.open { left:0; }
+  .mobile-toggle { display:block !important; }
+  .wa-container { grid-template-columns:1fr; }
+  .stat-grid { grid-template-columns:repeat(2,1fr); }
+}
+.mobile-toggle { display:none; background:none; border:none; color:var(--text-primary); font-size:20px; cursor:pointer; }
+.mobile-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.5); z-index:998;
+}
+.mobile-overlay.show { display:block; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">👑</div>
+      <div>
+        <h1>SureWin VIP</h1>
+        <div class="subtitle">AI-Powered CRM</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">AI Intelligence</div>
+        <div class="nav-item active" data-tab="ai-assistant">
+          <span class="icon">🤖</span> AI Assistant <span class="badge ai">NEW</span>
+        </div>
+        <div class="nav-item" data-tab="ai-briefing">
+          <span class="icon">📋</span> Daily Briefing <span class="badge ai">AI</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Operations</div>
+        <div class="nav-item" data-tab="daily-targets">
+          <span class="icon">🎯</span> Daily Targets
+        </div>
+        <div class="nav-item" data-tab="vip-scores">
+          <span class="icon">🧠</span> VIP Scores
+        </div>
+        <div class="nav-item" data-tab="kpi">
+          <span class="icon">📊</span> KPI Scorecard
+        </div>
+        <div class="nav-item" data-tab="churn">
+          <span class="icon">🚨</span> Churn Alerts <span class="badge" id="churnBadge"></span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Communication</div>
+        <div class="nav-item" data-tab="wa-reply">
+          <span class="icon">💬</span> WA Reply <span class="badge ai">AI</span>
+        </div>
+        <div class="nav-item" data-tab="birthdays">
+          <span class="icon">🎂</span> Birthdays
+        </div>
+        <div class="nav-item" data-tab="festivals">
+          <span class="icon">🗓</span> Festivals
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Tracking</div>
+        <div class="nav-item" data-tab="bonus">
+          <span class="icon">🧧</span> Bonus Tracker
+        </div>
+        <div class="nav-item" data-tab="bonus-summary">
+          <span class="icon">📊</span> Bonus Summary
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Intelligence</div>
+        <div class="nav-item" data-tab="intel">
+          <span class="icon">📊</span> Intel Report
+        </div>
+        <div class="nav-item" data-tab="priority">
+          <span class="icon">🚨</span> Priority List
+        </div>
+        <div class="nav-item" data-tab="upgrades">
+          <span class="icon">⬆️</span> Upgrades
+        </div>
+        <div class="nav-item" data-tab="tier-benefits">
+          <span class="icon">💎</span> Tier Benefits
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">System</div>
+        <div class="nav-item" data-tab="settings">
+          <span class="icon">⚙️</span> Settings
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="connection-status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Not connected</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="mobile-toggle" id="mobileToggle" onclick="toggleSidebar()">☰</button>
+        <div class="topbar-title" id="topbarTitle">🤖 AI Assistant</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary btn-sm" onclick="refreshAllData()">↻ Refresh</button>
+        <button class="btn btn-ai btn-sm" onclick="generateBriefing()">⚡ AI Briefing</button>
+      </div>
+    </div>
+
+    <div class="content" id="content">
+
+      <!-- ===== AI ASSISTANT TAB ===== -->
+      <div class="tab-panel active" id="tab-ai-assistant">
+        <div class="ai-panel">
+          <div class="ai-messages" id="aiMessages">
+            <div class="ai-msg system">🤖 AI Assistant connected — I have access to your VIP data. Ask me anything.</div>
+            <div class="ai-msg assistant">
+              Hi Marcus! I'm your AI-powered VIP CRM assistant. I can help you with:<br><br>
+              🔍 <strong>Query VIP data</strong> — "Who are the top 5 at-risk Diamond members?"<br>
+              📊 <strong>Analyze patterns</strong> — "Which VIPs have been inactive for 30+ days?"<br>
+              💬 <strong>Draft messages</strong> — "Write a reactivation message for a Platinum member"<br>
+              🎯 <strong>Strategy advice</strong> — "What's the best approach to retain high-value net winners?"<br>
+              📋 <strong>Campaign ideas</strong> — "Suggest a CNY campaign for Diamond tier"<br><br>
+              What would you like to know?
+            </div>
+          </div>
+          <div class="ai-input-bar">
+            <input type="text" id="aiInput" placeholder="Ask about your VIPs, get insights, draft messages..." onkeydown="if(event.key==='Enter')sendAIMessage()">
+            <button class="btn btn-ai" onclick="sendAIMessage()">Send ⚡</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== AI DAILY BRIEFING TAB ===== -->
+      <div class="tab-panel" id="tab-ai-briefing">
+        <div class="briefing-card">
+          <h3>⚡ AI Daily Briefing</h3>
+          <p>Click "Generate Briefing" to get an AI-powered summary of your VIP portfolio, today's priorities, churn risks, and recommended actions.</p>
+        </div>
+        <div style="text-align:center;margin:20px 0;">
+          <button class="btn btn-ai" onclick="generateBriefing()" style="padding:12px 32px;font-size:14px;">⚡ Generate Today's Briefing</button>
+        </div>
+        <div id="briefingContent"></div>
+      </div>
+
+      <!-- ===== DAILY TARGETS TAB ===== -->
+      <div class="tab-panel" id="tab-daily-targets">
+        <div class="filter-bar">
+          <span class="filter-chip active" onclick="filterTargets('all',this)">All Tiers</span>
+          <span class="filter-chip" onclick="filterTargets('diamond',this)">💎 Diamond</span>
+          <span class="filter-chip" onclick="filterTargets('platinum',this)">⬜ Platinum</span>
+          <span class="filter-chip" onclick="filterTargets('gold',this)">🥇 Gold</span>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🎯 Top 25 VIPs — Contact Today</div>
+              <div class="card-subtitle">Sorted by Predicted Deposit %</div>
+            </div>
+            <button class="btn btn-ai btn-sm" onclick="aiAnalyzeTargets()">🤖 AI Analysis</button>
+          </div>
+          <div class="table-wrap" id="targetsTable">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== VIP SCORES TAB ===== -->
+      <div class="tab-panel" id="tab-vip-scores">
+        <div class="filter-bar">
+          <span class="filter-chip active" onclick="filterScores('all',this)">All Tiers</span>
+          <span class="filter-chip" onclick="filterScores('diamond',this)">💎 Diamond</span>
+          <span class="filter-chip" onclick="filterScores('platinum',this)">⬜ Platinum</span>
+          <span class="filter-chip" onclick="filterScores('gold',this)">🥇 Gold</span>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🧠 VIP Score Engine</div>
+          </div>
+          <div class="table-wrap" id="scoresTable">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== KPI SCORECARD TAB ===== -->
+      <div class="tab-panel" id="tab-kpi">
+        <div class="stat-grid" id="kpiStats"></div>
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="loading-spinner"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- ===== CHURN ALERTS TAB ===== -->
+      <div class="tab-panel" id="tab-churn">
+        <div class="filter-bar">
+          <span class="filter-chip active" onclick="filterChurn('all',this)">All Risk</span>
+          <span class="filter-chip" onclick="filterChurn('critical',this)">🔴 Critical</span>
+          <span class="filter-chip" onclick="filterChurn('high',this)">🟠 High</span>
+          <span class="filter-chip" onclick="filterChurn('medium',this)">🟡 Medium</span>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🚨 Churn Alert Center</div>
+              <div class="card-subtitle">Top 25 at-risk VIP members</div>
+            </div>
+            <button class="btn btn-ai btn-sm" onclick="aiChurnAnalysis()">🤖 AI Retention Plan</button>
+          </div>
+          <div class="table-wrap" id="churnTable">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== WA REPLY TAB ===== -->
+      <div class="tab-panel" id="tab-wa-reply">
+        <div class="wa-container">
+          <div class="card">
+            <div class="card-title" style="margin-bottom:16px;">💬 Message Input</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>VIP Username</label>
+                <input type="text" id="waUsername" placeholder="Enter username">
+              </div>
+              <div class="form-group">
+                <label>Tier</label>
+                <select id="waTier">
+                  <option>DIAMOND</option><option>PLATINUM</option><option>GOLD</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom:12px;">
+              <label>Incoming Message</label>
+              <textarea id="waMessage" placeholder="Paste the VIP's message here..."></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Intent</label>
+                <select id="waIntent">
+                  <option value="hesitation">Hesitation</option>
+                  <option value="loss_care">Loss Care</option>
+                  <option value="big_win">Big Win</option>
+                  <option value="reactivation">Reactivation</option>
+                  <option value="upgrade_interest">Upgrade Interest</option>
+                  <option value="complaint">Complaint</option>
+                  <option value="general">General Inquiry</option>
+                  <option value="no_reply">No Reply Follow-up</option>
+                  <option value="birthday">Birthday</option>
+                  <option value="thank_you">Thank You</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Tone</label>
+                <select id="waTone">
+                  <option value="warm">Warm & Casual</option>
+                  <option value="formal">Formal & Premium</option>
+                  <option value="urgent">Urgent</option>
+                  <option value="empathetic">Empathetic</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Language</label>
+                <select id="waLang">
+                  <option value="mixed">ZH+EN (Mixed)</option>
+                  <option value="zh">ZH (Chinese)</option>
+                  <option value="en">EN (English)</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button class="btn btn-ai" onclick="generateAIReply()">🤖 AI Generate</button>
+              <button class="btn btn-secondary" onclick="generateRuleReply()">📝 Rule-Based</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📝 Generated Reply</div>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-secondary btn-xs" onclick="copyReply()">📋 Copy</button>
+                <button class="btn btn-secondary btn-xs" onclick="logReply()">💾 Log</button>
+                <button class="btn btn-secondary btn-xs" onclick="clearReply()">🗑 Clear</button>
+              </div>
+            </div>
+            <div class="wa-reply-box" id="waReplyBox">
+              <span class="placeholder">Generated reply will appear here...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="card-header">
+            <div class="card-title">📋 WA Conversation Log</div>
+            <button class="btn btn-secondary btn-xs" onclick="exportWALog()">⬇ Export</button>
+          </div>
+          <div class="table-wrap" id="waLogTable">
+            <table>
+              <thead><tr><th>Time</th><th>Username</th><th>Tier</th><th>Intent</th><th>Message</th><th>Reply</th><th>Tone</th><th>Lang</th></tr></thead>
+              <tbody id="waLogBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== BIRTHDAYS TAB ===== -->
+      <div class="tab-panel" id="tab-birthdays">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🎂 Upcoming Birthdays</div>
+          </div>
+          <div class="table-wrap" id="birthdaysTable">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== FESTIVALS TAB ===== -->
+      <div class="tab-panel" id="tab-festivals">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px;">🗓 2026 Festival Calendar</div>
+          <div class="festival-grid" id="festivalGrid"></div>
+        </div>
+      </div>
+
+      <!-- ===== BONUS TRACKER TAB ===== -->
+      <div class="tab-panel" id="tab-bonus">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px;">➕ Add Bonus Entry</div>
+          <div class="form-row">
+            <div class="form-group"><label>Username</label><input type="text" id="bonusUser"></div>
+            <div class="form-group"><label>Tier</label><select id="bonusTier"><option>DIAMOND</option><option>PLATINUM</option><option>GOLD</option></select></div>
+            <div class="form-group"><label>Date</label><input type="date" id="bonusDate"></div>
+            <div class="form-group"><label>Bonus Type</label><select id="bonusType"><option>红包-输钱</option><option>Birthday Bonus</option><option>Reactivation</option><option>Upgrade Bonus</option><option>Festival Bonus</option><option>Weekly Deposit</option><option>Custom</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Bonus (RM)</label><input type="number" id="bonusAmount"></div>
+            <div class="form-group"><label>Win/Loss</label><select id="bonusWL"><option>Loss</option><option>Win</option></select></div>
+            <div class="form-group"><label>Remarks</label><input type="text" id="bonusRemarks"></div>
+            <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="addBonus()">💾 Add</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🧧 Bonus Records</div>
+            <button class="btn btn-secondary btn-xs" onclick="exportBonusData()">⬇ Export</button>
+          </div>
+          <div class="table-wrap" id="bonusTable">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== BONUS SUMMARY TAB ===== -->
+      <div class="tab-panel" id="tab-bonus-summary">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px;">📊 Bonus Summary</div>
+          <div id="bonusSummaryContent">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== INTEL TAB ===== -->
+      <div class="tab-panel" id="tab-intel">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📊 Executive Summary & VIP Intel</div>
+            <button class="btn btn-ai btn-sm" onclick="aiIntelSummary()">🤖 AI Analysis</button>
+          </div>
+          <div id="intelContent">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRIORITY TAB ===== -->
+      <div class="tab-panel" id="tab-priority">
+        <div class="filter-bar">
+          <span class="filter-chip active" onclick="filterPriority('all',this)">All</span>
+          <span class="filter-chip" onclick="filterPriority('p1',this)">🔴 P1 — TODAY</span>
+          <span class="filter-chip" onclick="filterPriority('p2',this)">🟠 P2 — This Week</span>
+          <span class="filter-chip" onclick="filterPriority('p3',this)">🟡 P3</span>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🚨 Priority Contact List</div>
+          </div>
+          <div class="table-wrap" id="priorityTable">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== UPGRADES TAB ===== -->
+      <div class="tab-panel" id="tab-upgrades">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">⬆️ Tier Upgrade Targets</div>
+          </div>
+          <div class="table-wrap" id="upgradesTable">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== TIER BENEFITS TAB ===== -->
+      <div class="tab-panel" id="tab-tier-benefits">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px;">💎 Tier Benefits Reference</div>
+          <div id="tierBenefitsContent">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SETTINGS TAB ===== -->
+      <div class="tab-panel" id="tab-settings">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px;">⚙️ Connection Settings</div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Apps Script Web App URL</label>
+            <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/.../exec">
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Agent Name</label>
+            <input type="text" id="agentName" placeholder="Marcus">
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Anthropic API Key (for AI features — stored locally only)</label>
+            <input type="password" id="anthropicKey" placeholder="sk-ant-...">
+            <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">⚠️ Key is stored in localStorage only. Never shared externally.</div>
+          </div>
+
+          <div class="card-title" style="margin:20px 0 12px;">Sheet Tab Names</div>
+          <div class="form-row">
+            <div class="form-group"><label>Daily Targets</label><input type="text" id="tabTargets" value="Daily_Targets"></div>
+            <div class="form-group"><label>Score Engine</label><input type="text" id="tabScores" value="Score_Engine"></div>
+            <div class="form-group"><label>KPI Dashboard</label><input type="text" id="tabKPI" value="KPI_Dashboard"></div>
+            <div class="form-group"><label>Churn Alerts</label><input type="text" id="tabChurn" value="Churn_Alerts"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Birthday Engine</label><input type="text" id="tabBirthday" value="Birthday_Engine"></div>
+            <div class="form-group"><label>Bonus Tracker</label><input type="text" id="tabBonus" value="Bonus_Tracker"></div>
+            <div class="form-group"><label>Bonus Summary</label><input type="text" id="tabBonusSummary" value="Bonus_Summary"></div>
+            <div class="form-group"><label>Executive Summary</label><input type="text" id="tabExecSummary" value="Executive_Summary"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>VIP Intel</label><input type="text" id="tabIntel" value="VIP_Intel"></div>
+            <div class="form-group"><label>Priority Contacts</label><input type="text" id="tabPriority" value="Priority_Contacts"></div>
+            <div class="form-group"><label>Silver Upgrades</label><input type="text" id="tabUpgrades" value="Silver_Upgrades"></div>
+            <div class="form-group"><label>Tier Benefits</label><input type="text" id="tabTierBenefits" value="Tier_Benefits"></div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:8px;">
+            <button class="btn btn-primary" onclick="saveSettings()">💾 Save & Connect</button>
+            <button class="btn btn-secondary" onclick="testConnection()">🔌 Test Connection</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px;">📘 Setup Guide</div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+            <strong>Step 1:</strong> Paste your Apps Script Web App URL above<br>
+            <strong>Step 2:</strong> Enter your Anthropic API key for AI features<br>
+            <strong>Step 3:</strong> Click "Save & Connect"<br>
+            <strong>Step 4:</strong> Verify tab names match your Google Sheet tabs<br><br>
+            <strong>AI Features require:</strong> An Anthropic API key (get one at console.anthropic.com)
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// =====================================================
+// SUREWIN VIP CRM — AI-POWERED ENGINE
+// =====================================================
+
+// --- STATE ---
+const STATE = {
+  apiUrl: '',
+  agentName: 'Marcus',
+  anthropicKey: '',
+  tabs: {},
+  data: {},
+  waLog: [],
+  currentTab: 'ai-assistant',
+  connected: false
+};
+
+// --- INIT ---
+document.addEventListener('DOMContentLoaded', () => {
+  loadSettings();
+  setupNav();
+  renderFestivals();
+  if (STATE.apiUrl) connectAndLoad();
+});
+
+// --- SETTINGS ---
+function loadSettings() {
+  try {
+    STATE.apiUrl = localStorage.getItem('sw_apiUrl') || '';
+    STATE.agentName = localStorage.getItem('sw_agentName') || 'Marcus';
+    STATE.anthropicKey = localStorage.getItem('sw_anthropicKey') || '';
+    STATE.waLog = JSON.parse(localStorage.getItem('sw_waLog') || '[]');
+
+    document.getElementById('apiUrl').value = STATE.apiUrl;
+    document.getElementById('agentName').value = STATE.agentName;
+    document.getElementById('anthropicKey').value = STATE.anthropicKey;
+
+    const tabFields = ['tabTargets','tabScores','tabKPI','tabChurn','tabBirthday','tabBonus','tabBonusSummary','tabExecSummary','tabIntel','tabPriority','tabUpgrades','tabTierBenefits'];
+    tabFields.forEach(f => {
+      const saved = localStorage.getItem('sw_' + f);
+      if (saved) document.getElementById(f).value = saved;
+    });
+    renderWALog();
+  } catch(e) { console.log('Settings load error:', e); }
+}
+
+function saveSettings() {
+  STATE.apiUrl = document.getElementById('apiUrl').value.trim();
+  STATE.agentName = document.getElementById('agentName').value.trim();
+  STATE.anthropicKey = document.getElementById('anthropicKey').value.trim();
+
+  localStorage.setItem('sw_apiUrl', STATE.apiUrl);
+  localStorage.setItem('sw_agentName', STATE.agentName);
+  localStorage.setItem('sw_anthropicKey', STATE.anthropicKey);
+
+  const tabFields = ['tabTargets','tabScores','tabKPI','tabChurn','tabBirthday','tabBonus','tabBonusSummary','tabExecSummary','tabIntel','tabPriority','tabUpgrades','tabTierBenefits'];
+  tabFields.forEach(f => localStorage.setItem('sw_' + f, document.getElementById(f).value));
+
+  connectAndLoad();
+  showToast('Settings saved!');
+}
+
+function testConnection() {
+  const url = document.getElementById('apiUrl').value.trim();
+  if (!url) { showToast('Enter API URL first', 'error'); return; }
+  fetchSheet(url, 'Daily_Targets', (data) => {
+    if (data && data.length > 0) {
+      showToast('✅ Connected! ' + data.length + ' rows loaded');
+    } else {
+      showToast('Connected but no data found', 'warn');
+    }
+  });
+}
+
+// --- NAVIGATION ---
+function setupNav() {
+  document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
+    item.addEventListener('click', () => {
+      const tab = item.dataset.tab;
+      switchTab(tab);
+    });
+  });
+}
+
+function switchTab(tab) {
+  STATE.currentTab = tab;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`)?.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab)?.classList.add('active');
+
+  const titles = {
+    'ai-assistant':'🤖 AI Assistant','ai-briefing':'📋 Daily Briefing',
+    'daily-targets':'🎯 Daily Targets','vip-scores':'🧠 VIP Scores',
+    'kpi':'📊 KPI Scorecard','churn':'🚨 Churn Alerts',
+    'wa-reply':'💬 WA Reply Generator','birthdays':'🎂 Birthdays',
+    'festivals':'🗓 Festivals','bonus':'🧧 Bonus Tracker',
+    'bonus-summary':'📊 Bonus Summary','intel':'📊 Intel Report',
+    'priority':'🚨 Priority List','upgrades':'⬆️ Upgrades',
+    'tier-benefits':'💎 Tier Benefits','settings':'⚙️ Settings'
+  };
+  document.getElementById('topbarTitle').textContent = titles[tab] || tab;
+  closeSidebar();
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('mobileOverlay').classList.toggle('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('show'); }
+document.getElementById('mobileOverlay').addEventListener('click', closeSidebar);
+
+// --- DATA LOADING (JSONP) ---
+function fetchSheet(apiUrl, sheetName, callback) {
+  const cbName = 'cb_' + sheetName.replace(/[^a-zA-Z0-9]/g,'') + '_' + Date.now();
+  const url = apiUrl + '?action=read&sheet=' + encodeURIComponent(sheetName) + '&callback=' + cbName;
+
+  window[cbName] = function(response) {
+    delete window[cbName];
+    const script = document.getElementById('script_' + cbName);
+    if (script) script.remove();
+    if (response && response.data) {
+      callback(response.data);
+    } else if (Array.isArray(response)) {
+      callback(response);
+    } else {
+      callback([]);
+    }
+  };
+
+  const script = document.createElement('script');
+  script.id = 'script_' + cbName;
+  script.src = url;
+  script.onerror = () => { delete window[cbName]; script.remove(); callback([]); };
+  document.head.appendChild(script);
+}
+
+function connectAndLoad() {
+  if (!STATE.apiUrl) return;
+
+  setConnected(true);
+  const sheets = [
+    { key:'targets', tab:'tabTargets', render:renderTargets },
+    { key:'scores', tab:'tabScores', render:renderScores },
+    { key:'kpi', tab:'tabKPI', render:renderKPI },
+    { key:'churn', tab:'tabChurn', render:renderChurn },
+    { key:'birthdays', tab:'tabBirthday', render:renderBirthdays },
+    { key:'bonus', tab:'tabBonus', render:renderBonus },
+    { key:'bonusSummary', tab:'tabBonusSummary', render:renderBonusSummary },
+    { key:'execSummary', tab:'tabExecSummary', render:renderIntel },
+    { key:'intel', tab:'tabIntel', render:null },
+    { key:'priority', tab:'tabPriority', render:renderPriority },
+    { key:'upgrades', tab:'tabUpgrades', render:renderUpgrades },
+    { key:'tierBenefits', tab:'tabTierBenefits', render:renderTierBenefits }
+  ];
+
+  sheets.forEach(s => {
+    const sheetName = document.getElementById(s.tab)?.value || s.key;
+    fetchSheet(STATE.apiUrl, sheetName, (data) => {
+      STATE.data[s.key] = data;
+      if (s.render) s.render(data);
+    });
+  });
+}
+
+function refreshAllData() { connectAndLoad(); showToast('Refreshing data...'); }
+
+function setConnected(connected) {
+  STATE.connected = connected;
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  dot.className = 'status-dot' + (connected ? ' connected' : '');
+  text.textContent = connected ? 'Connected' : 'Not connected';
+}
+
+// --- RENDER: DAILY TARGETS ---
+function renderTargets(data) {
+  if (!data || data.length === 0) { document.getElementById('targetsTable').innerHTML = emptyState('No targets loaded'); return; }
+  const headers = data[0];
+  const rows = data.slice(1);
+  let html = '<table><thead><tr>';
+  headers.forEach(h => html += `<th>${esc(h)}</th>`);
+  html += '<th>AI Action</th></tr></thead><tbody>';
+  rows.forEach(row => {
+    const tier = findTier(row, headers);
+    html += '<tr>';
+    row.forEach((cell, i) => {
+      if (headers[i]?.toLowerCase().includes('tier')) {
+        html += `<td><span class="tier ${tier}">${esc(cell)}</span></td>`;
+      } else if (headers[i]?.toLowerCase().includes('risk')) {
+        html += `<td><span class="risk ${getRiskClass(cell)}">${esc(cell)}</span></td>`;
+      } else {
+        html += `<td>${esc(cell)}</td>`;
+      }
+    });
+    html += `<td><button class="btn btn-ai btn-xs" onclick="aiQuickAction('${esc(row[1]||row[0])}','${tier}')">💬 AI</button></td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('targetsTable').innerHTML = html;
+}
+
+// --- RENDER: VIP SCORES ---
+function renderScores(data) {
+  if (!data || data.length === 0) { document.getElementById('scoresTable').innerHTML = emptyState('No scores loaded'); return; }
+  const headers = data[0];
+  const rows = data.slice(1);
+  let html = '<table><thead><tr>';
+  headers.forEach(h => html += `<th>${esc(h)}</th>`);
+  html += '</tr></thead><tbody>';
+  rows.forEach(row => {
+    const tier = findTier(row, headers);
+    html += '<tr>';
+    row.forEach((cell, i) => {
+      if (headers[i]?.toLowerCase().includes('tier')) {
+        html += `<td><span class="tier ${tier}">${esc(cell)}</span></td>`;
+      } else if (headers[i]?.toLowerCase().includes('score')) {
+        const score = parseFloat(cell) || 0;
+        const color = score >= 70 ? 'var(--accent-green)' : score >= 40 ? 'var(--accent-gold)' : 'var(--accent-red)';
+        html += `<td><span style="font-weight:700;color:${color};font-family:var(--mono)">${esc(cell)}</span></td>`;
+      } else {
+        html += `<td>${esc(cell)}</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('scoresTable').innerHTML = html;
+}
+
+// --- RENDER: KPI ---
+function renderKPI(data) {
+  if (!data || data.length === 0) { document.getElementById('kpiGrid').innerHTML = emptyState('No KPI data loaded'); return; }
+  let statsHtml = '';
+  let gridHtml = '';
+  const rows = data.slice(1);
+  rows.forEach(row => {
+    const label = row[0] || '';
+    const value = row[1] || '';
+    const target = row[2] || '';
+    const weight = row[3] || '';
+
+    const numVal = parseFloat(String(value).replace(/[%,RM]/g, '')) || 0;
+    const numTarget = parseFloat(String(target).replace(/[%,RM]/g, '')) || 100;
+    const pct = Math.min((numVal / numTarget) * 100, 100);
+    const barColor = pct >= 80 ? 'var(--accent-green)' : pct >= 50 ? 'var(--accent-gold)' : 'var(--accent-red)';
+
+    gridHtml += `<div class="kpi-card">
+      <div class="kpi-title">${esc(label)} ${weight ? '<span style="opacity:0.5">(' + esc(weight) + ')</span>' : ''}</div>
+      <div class="kpi-value" style="color:${barColor}">${esc(value)}</div>
+      ${target ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Target: ${esc(target)}</div>` : ''}
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+    </div>`;
+  });
+  document.getElementById('kpiStats').innerHTML = statsHtml;
+  document.getElementById('kpiGrid').innerHTML = gridHtml;
+}
+
+// --- RENDER: CHURN ---
+function renderChurn(data) {
+  if (!data || data.length === 0) { document.getElementById('churnTable').innerHTML = emptyState('No churn alerts'); return; }
+  const headers = data[0];
+  const rows = data.slice(1);
+  document.getElementById('churnBadge').textContent = rows.length;
+  let html = '<table><thead><tr>';
+  headers.forEach(h => html += `<th>${esc(h)}</th>`);
+  html += '<th>AI Action</th></tr></thead><tbody>';
+  rows.forEach(row => {
+    const tier = findTier(row, headers);
+    html += '<tr>';
+    row.forEach((cell, i) => {
+      if (headers[i]?.toLowerCase().includes('tier')) {
+        html += `<td><span class="tier ${tier}">${esc(cell)}</span></td>`;
+      } else if (headers[i]?.toLowerCase().includes('risk') || headers[i]?.toLowerCase().includes('priority')) {
+        html += `<td><span class="risk ${getRiskClass(cell)}">${esc(cell)}</span></td>`;
+      } else {
+        html += `<td>${esc(cell)}</td>`;
+      }
+    });
+    html += `<td><button class="btn btn-ai btn-xs" onclick="aiRetentionPlan('${esc(row[1]||row[0])}')">🤖 Plan</button></td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('churnTable').innerHTML = html;
+}
+
+// --- RENDER: BIRTHDAYS ---
+function renderBirthdays(data) {
+  if (!data || data.length === 0) { document.getElementById('birthdaysTable').innerHTML = emptyState('No birthday data'); return; }
+  renderGenericTable('birthdaysTable', data);
+}
+
+// --- RENDER: BONUS ---
+function renderBonus(data) {
+  if (!data || data.length === 0) { document.getElementById('bonusTable').innerHTML = emptyState('No bonus records'); return; }
+  renderGenericTable('bonusTable', data);
+}
+
+// --- RENDER: BONUS SUMMARY ---
+function renderBonusSummary(data) {
+  if (!data || data.length === 0) { document.getElementById('bonusSummaryContent').innerHTML = emptyState('No bonus summary'); return; }
+  renderGenericTable('bonusSummaryContent', data);
+}
+
+// --- RENDER: INTEL ---
+function renderIntel(data) {
+  if (!data || data.length === 0) { document.getElementById('intelContent').innerHTML = emptyState('No intel data'); return; }
+  renderGenericTable('intelContent', data);
+}
+
+// --- RENDER: PRIORITY ---
+function renderPriority(data) {
+  if (!data || data.length === 0) { document.getElementById('priorityTable').innerHTML = emptyState('No priority contacts'); return; }
+  const headers = data[0];
+  const rows = data.slice(1);
+  let html = '<table><thead><tr>';
+  headers.forEach(h => html += `<th>${esc(h)}</th>`);
+  html += '</tr></thead><tbody>';
+  rows.forEach(row => {
+    html += '<tr>';
+    row.forEach((cell, i) => {
+      if (headers[i]?.toLowerCase().includes('priority')) {
+        const cls = String(cell).includes('1') ? 'p1' : String(cell).includes('2') ? 'p2' : 'p3';
+        html += `<td><span class="priority ${cls}">${esc(cell)}</span></td>`;
+      } else if (headers[i]?.toLowerCase().includes('tier')) {
+        html += `<td><span class="tier ${getTierClass(cell)}">${esc(cell)}</span></td>`;
+      } else {
+        html += `<td>${esc(cell)}</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('priorityTable').innerHTML = html;
+}
+
+// --- RENDER: UPGRADES ---
+function renderUpgrades(data) {
+  if (!data || data.length === 0) { document.getElementById('upgradesTable').innerHTML = emptyState('No upgrade targets'); return; }
+  renderGenericTable('upgradesTable', data);
+}
+
+// --- RENDER: TIER BENEFITS ---
+function renderTierBenefits(data) {
+  if (!data || data.length === 0) { document.getElementById('tierBenefitsContent').innerHTML = emptyState('No tier benefits data'); return; }
+  renderGenericTable('tierBenefitsContent', data);
+}
+
+// --- RENDER: FESTIVALS ---
+function renderFestivals() {
+  const festivals = [
+    { date:'2026-01-01', name:'New Year', icon:'🎆' },
+    { date:'2026-01-29', name:'Chinese New Year', icon:'🧧' },
+    { date:'2026-02-14', name:"Valentine's Day", icon:'❤️' },
+    { date:'2026-02-17', name:'Chap Goh Mei', icon:'🏮' },
+    { date:'2026-03-17', name:'Nuzul Al-Quran', icon:'☪️' },
+    { date:'2026-03-28', name:'Hari Raya Aidilfitri', icon:'🌙' },
+    { date:'2026-05-01', name:'Labour Day', icon:'🔧' },
+    { date:'2026-05-12', name:'Vesak Day', icon:'🪷' },
+    { date:'2026-06-02', name:'Agong Birthday', icon:'👑' },
+    { date:'2026-06-05', name:'Hari Raya Haji', icon:'🐑' },
+    { date:'2026-06-26', name:'Awal Muharram', icon:'☪️' },
+    { date:'2026-08-31', name:'Merdeka Day', icon:'🇲🇾' },
+    { date:'2026-09-04', name:'Maulidur Rasul', icon:'☪️' },
+    { date:'2026-09-16', name:'Malaysia Day', icon:'🇲🇾' },
+    { date:'2026-10-20', name:'Deepavali', icon:'🪔' },
+    { date:'2026-12-25', name:'Christmas', icon:'🎄' },
+  ];
+
+  const today = new Date();
+  let html = '';
+  festivals.forEach(f => {
+    const d = new Date(f.date);
+    const diff = Math.ceil((d - today) / (1000*60*60*24));
+    const status = diff < 0 ? 'Past' : diff === 0 ? 'TODAY!' : diff + ' days away';
+    const opacity = diff < 0 ? '0.5' : '1';
+    html += `<div class="festival-card" style="opacity:${opacity}">
+      <div class="festival-date">${f.icon} ${f.date}</div>
+      <div class="festival-name">${f.name}</div>
+      <div class="festival-days">${status}</div>
+    </div>`;
+  });
+  document.getElementById('festivalGrid').innerHTML = html;
+}
+
+// --- GENERIC TABLE ---
+function renderGenericTable(containerId, data) {
+  if (!data || data.length === 0) { document.getElementById(containerId).innerHTML = emptyState('No data'); return; }
+  const headers = data[0];
+  const rows = data.slice(1);
+  let html = '<table><thead><tr>';
+  headers.forEach(h => html += `<th>${esc(h)}</th>`);
+  html += '</tr></thead><tbody>';
+  rows.forEach(row => {
+    html += '<tr>';
+    row.forEach((cell, i) => {
+      if (headers[i]?.toLowerCase().includes('tier')) {
+        html += `<td><span class="tier ${getTierClass(cell)}">${esc(cell)}</span></td>`;
+      } else {
+        html += `<td>${esc(cell)}</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById(containerId).innerHTML = html;
+}
+
+// --- FILTER HELPERS ---
+function filterTargets(tier, el) { activateFilter(el); /* filter logic using STATE.data.targets */ }
+function filterScores(tier, el) { activateFilter(el); }
+function filterChurn(risk, el) { activateFilter(el); }
+function filterPriority(p, el) { activateFilter(el); }
+
+function activateFilter(el) {
+  el.parentElement.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// =====================================================
+// AI ENGINE — Claude-Powered Features
+// =====================================================
+
+async function callClaude(systemPrompt, userMessage) {
+  if (!STATE.anthropicKey) {
+    showToast('Add your Anthropic API key in Settings', 'error');
+    return null;
+  }
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': STATE.anthropicKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }]
+      })
+    });
+
+    const data = await response.json();
+    if (data.content && data.content[0]) {
+      return data.content[0].text;
+    }
+    return 'Sorry, I could not generate a response. Please check your API key.';
+  } catch(e) {
+    console.error('Claude API error:', e);
+    return 'Error connecting to AI. Please check your API key and try again.';
+  }
+}
+
+function getVIPContext() {
+  let context = 'SureWin VIP CRM Data Summary:\n';
+  context += '- Total VIPs: 360 (Diamond: 19, Platinum: 60, Gold: 281)\n';
+  context += '- KPI Scope: Platinum + Diamond only\n';
+  context += '- Platform: Online gaming (SureWin)\n';
+  context += '- Currency: RM (Malaysian Ringgit)\n\n';
+
+  if (STATE.data.targets?.length > 1) {
+    context += 'Daily Targets (Top entries):\n';
+    STATE.data.targets.slice(0, 6).forEach(r => context += JSON.stringify(r) + '\n');
+  }
+  if (STATE.data.churn?.length > 1) {
+    context += '\nChurn Alerts (Top entries):\n';
+    STATE.data.churn.slice(0, 6).forEach(r => context += JSON.stringify(r) + '\n');
+  }
+  if (STATE.data.scores?.length > 1) {
+    context += '\nVIP Scores (Top entries):\n';
+    STATE.data.scores.slice(0, 6).forEach(r => context += JSON.stringify(r) + '\n');
+  }
+  if (STATE.data.kpi?.length > 1) {
+    context += '\nKPI Data:\n';
+    STATE.data.kpi.forEach(r => context += JSON.stringify(r) + '\n');
+  }
+  return context;
+}
+
+const SYSTEM_PROMPT = `You are Marcus's AI assistant for SureWin VIP CRM — a VIP retention system for an online gaming platform.
+
+Key facts:
+- 360 VIP members: 19 Diamond, 60 Platinum, 281 Gold
+- KPI scope: Platinum + Diamond only (Gold = development pipeline)
+- Currency: RM (Malaysian Ringgit)
+- VIP Score formula: Win/Loss (35%) + Recency (30%) + Deposit size (25%) + Tier (10%)
+- Churn priorities: P1 = net winners >RM50k OR >60d inactive, P2 = 30-60d dormant, P3 = 14-30d inactive + high value
+- Communication: WhatsApp primarily, ZH/EN/Mixed language
+- Tier upgrade: Gold→Plat (dep>RM200k OR 30+ deposits), Plat→Diamond (dep>RM500k OR 50+ deposits)
+
+You help with:
+1. Analyzing VIP data and identifying patterns
+2. Crafting personalized retention strategies
+3. Generating WhatsApp messages in ZH, EN, or Mixed
+4. Recommending campaign ideas
+5. Prioritizing daily actions
+6. Providing churn risk insights
+
+Be concise, data-driven, and action-oriented. Use both English and Chinese where appropriate for the Malaysian market context. Format responses with clear sections and bullet points.`;
+
+// --- AI CHAT ---
+async function sendAIMessage() {
+  const input = document.getElementById('aiInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  addChatMessage('user', msg);
+  input.value = '';
+
+  const typingId = addChatMessage('assistant', '<div class="ai-typing"><span></span><span></span><span></span></div>');
+
+  const context = getVIPContext();
+  const reply = await callClaude(SYSTEM_PROMPT, context + '\n\nUser query: ' + msg);
+
+  const msgEl = document.getElementById(typingId);
+  if (msgEl) {
+    msgEl.innerHTML = formatAIResponse(reply || 'Sorry, could not generate a response.');
+  }
+}
+
+function addChatMessage(role, content) {
+  const container = document.getElementById('aiMessages');
+  const div = document.createElement('div');
+  const id = 'msg_' + Date.now();
+  div.id = id;
+  div.className = 'ai-msg ' + role;
+  div.innerHTML = content;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return id;
+}
+
+function formatAIResponse(text) {
+  if (!text) return '';
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n- /g, '\n• ')
+    .replace(/\n\d+\. /g, (m) => '\n' + m.trim() + ' ')
+    .replace(/`(.*?)`/g, '<code style="background:var(--bg-input);padding:2px 6px;border-radius:3px;font-family:var(--mono);font-size:11px;">$1</code>')
+    .replace(/\n/g, '<br>');
+}
+
+// --- AI DAILY BRIEFING ---
+async function generateBriefing() {
+  const container = document.getElementById('briefingContent');
+  container.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div><p style="text-align:center;color:var(--text-muted);margin-top:12px;">AI is analyzing your VIP portfolio...</p>';
+
+  if (STATE.currentTab !== 'ai-briefing') switchTab('ai-briefing');
+
+  const context = getVIPContext();
+  const prompt = `Based on this VIP CRM data, generate today's daily briefing for Marcus (VIP retention agent).
+
+${context}
+
+Generate a structured briefing with:
+1. **Portfolio Health** — Quick stats on active/inactive/at-risk counts
+2. **Top 5 Priority Actions** — Most critical things to do TODAY with specific VIP names if available
+3. **Churn Risk Alert** — Members needing immediate attention
+4. **Opportunities** — Upgrade candidates, reactivation targets
+5. **Recommended Messages** — 2-3 suggested WhatsApp outreach messages (in ZH+EN mixed)
+
+Be specific with data. Use numbers. Be actionable.`;
+
+  const reply = await callClaude(SYSTEM_PROMPT, prompt);
+
+  if (reply) {
+    container.innerHTML = `<div class="briefing-card">
+      <h3>⚡ Today's Briefing — ${new Date().toLocaleDateString('en-MY', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}</h3>
+      <div style="font-size:13px;line-height:1.8;color:var(--text-secondary);">${formatAIResponse(reply)}</div>
+    </div>`;
+  } else {
+    container.innerHTML = '<div class="empty-state"><p>Could not generate briefing. Check your API key in Settings.</p></div>';
+  }
+}
+
+// --- AI WHATSAPP REPLY ---
+async function generateAIReply() {
+  const username = document.getElementById('waUsername').value.trim();
+  const tier = document.getElementById('waTier').value;
+  const message = document.getElementById('waMessage').value.trim();
+  const intent = document.getElementById('waIntent').value;
+  const tone = document.getElementById('waTone').value;
+  const lang = document.getElementById('waLang').value;
+
+  if (!message) { showToast('Enter the incoming message', 'error'); return; }
+
+  const replyBox = document.getElementById('waReplyBox');
+  replyBox.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>';
+
+  const langMap = { mixed:'Chinese+English mixed (code-switching)', zh:'Chinese only', en:'English only' };
+  const toneMap = { warm:'Warm & Casual — friendly, use emoji', formal:'Formal & Premium — professional, respectful', urgent:'Urgent — create excitement/FOMO', empathetic:'Empathetic — understanding, caring' };
+
+  const prompt = `Generate a WhatsApp reply for a VIP member.
+
+VIP: ${username || 'Unknown'} | Tier: ${tier}
+Their message: "${message}"
+Detected intent: ${intent.replace(/_/g,' ')}
+Tone: ${toneMap[tone]}
+Language: ${langMap[lang]}
+
+Context: This is SureWin online gaming platform. You are their personal VIP host.
+- If loss care: be empathetic, mention rebates or special care, don't push deposits
+- If big win: celebrate with them, mention tier benefits
+- If reactivation: welcome back warmly, mention what they've missed
+- If hesitation: address concerns gently, highlight value
+- If complaint: apologize, escalate to resolve
+- If birthday: warm wishes, mention birthday bonus
+
+Generate ONLY the WhatsApp message. No explanations. Keep it 2-4 lines. Natural and human-sounding.`;
+
+  const reply = await callClaude(SYSTEM_PROMPT, prompt);
+  replyBox.innerHTML = reply || 'Could not generate reply. Check your API key.';
+}
+
+function generateRuleReply() {
+  const intent = document.getElementById('waIntent').value;
+  const tier = document.getElementById('waTier').value;
+  const username = document.getElementById('waUsername').value.trim() || 'VIP';
+  const lang = document.getElementById('waLang').value;
+
+  const replies = {
+    hesitation: { zh:`${username} 您好~ 有什么顾虑可以跟我说哦 🤗 我们这里有专属${tier}优惠等着您~`, en:`Hi ${username}! 😊 If you have any concerns, feel free to share with me. We have exclusive ${tier} benefits waiting for you~`, mixed:`Hi ${username} 😊 有什么顾虑可以跟我说~ We have exclusive ${tier} benefits waiting for you 🎁` },
+    loss_care: { zh:`${username} 别太在意~ 输赢是常态 🤗 ${tier}会员有专属返水和关怀礼金，我帮您留意~`, en:`${username}, don't worry too much about it 🤗 Win or lose, it's part of the game. As a ${tier} member, you have special rebates. Let me check for you~`, mixed:`${username} 别太在意~ 🤗 As ${tier} member, you have special rebates 我帮您留意一下~` },
+    big_win: { zh:`恭喜 ${username}！🎉🎊 大赢特赢！${tier}的运气就是不一样~ 继续加油 💪`, en:`Congratulations ${username}! 🎉🎊 What an amazing win! ${tier} luck is different! Keep it up 💪`, mixed:`恭喜 ${username}！🎉🎊 Amazing win! ${tier}的运气就是不一样~ Keep it up 💪` },
+    reactivation: { zh:`${username} 好久不见！想您了 😊 最近有很多新活动和优惠，特别为${tier}准备的~ 要不要了解一下？`, en:`${username}! Long time no see! 😊 We've missed you. There are new promotions specially for ${tier} members. Want to know more?`, mixed:`${username} 好久不见！😊 We've missed you~ 最近有新活动特别为${tier}准备的，要了解一下吗？` },
+    upgrade_interest: { zh:`${username} 想升级是吧？ 🌟 我帮您看看目前的进度和条件~ ${tier}的福利已经很好了，升级之后更棒哦！`, en:`${username}, interested in upgrading? 🌟 Let me check your progress and requirements~ ${tier} benefits are already great, but the next tier is even better!`, mixed:`${username} 想升级？ 🌟 Let me check your progress~ ${tier}福利已经很好了，next tier 更棒哦！` },
+    complaint: { zh:`${username} 非常抱歉给您带来不好的体验 😔 我马上帮您处理，请给我一点时间~`, en:`${username}, I sincerely apologize for the inconvenience 😔 Let me handle this for you right away. Please give me a moment~`, mixed:`${username} 非常抱歉 😔 I'll handle this right away, 请给我一点时间~` },
+    general: { zh:`${username} 您好~ 有什么可以帮到您的吗？😊`, en:`Hi ${username}! How can I help you today? 😊`, mixed:`Hi ${username}~ 有什么可以帮到您的吗？😊` },
+    no_reply: { zh:`${username} 您好~ 之前的信息您看到了吗？😊 随时可以联系我哦~`, en:`Hi ${username}! 😊 Just following up on my previous message. Feel free to reach out anytime~`, mixed:`Hi ${username} 😊 之前的信息看到了吗？Feel free to reach out anytime~` },
+    birthday: { zh:`${username} 生日快乐！🎂🎉 祝您新的一年万事如意！${tier}专属生日礼物已准备好~`, en:`Happy Birthday ${username}! 🎂🎉 Wishing you all the best! Your ${tier} birthday gift is ready~`, mixed:`${username} 生日快乐！🎂🎉 Your ${tier} birthday gift is ready 🎁` },
+    thank_you: { zh:`${username} 不客气~ 😊 有需要随时找我，${tier}专属服务~`, en:`You're welcome ${username}! 😊 I'm always here for you. That's ${tier} exclusive service~`, mixed:`${username} 不客气~ 😊 有需要随时找我~ That's ${tier} exclusive service 💎` },
+  };
+
+  const reply = replies[intent]?.[lang] || replies[intent]?.mixed || 'No template available';
+  document.getElementById('waReplyBox').innerHTML = reply;
+}
+
+function copyReply() {
+  const text = document.getElementById('waReplyBox').innerText;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
+}
+
+function logReply() {
+  const entry = {
+    time: new Date().toLocaleString(),
+    username: document.getElementById('waUsername').value,
+    tier: document.getElementById('waTier').value,
+    intent: document.getElementById('waIntent').value,
+    message: document.getElementById('waMessage').value,
+    reply: document.getElementById('waReplyBox').innerText,
+    tone: document.getElementById('waTone').value,
+    lang: document.getElementById('waLang').value
+  };
+  STATE.waLog.unshift(entry);
+  localStorage.setItem('sw_waLog', JSON.stringify(STATE.waLog.slice(0, 100)));
+  renderWALog();
+  showToast('Logged!');
+
+  // Also push to Google Sheet if connected
+  if (STATE.apiUrl) {
+    fetch(STATE.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `action=appendRow&sheet=WA_Log&rowData=${encodeURIComponent(JSON.stringify([entry.time, entry.username, entry.tier, entry.intent, entry.message, entry.reply, entry.tone, entry.lang]))}`
+    }).catch(e => console.log('WA Log push error:', e));
+  }
+}
+
+function clearReply() { document.getElementById('waReplyBox').innerHTML = '<span class="placeholder">Generated reply will appear here...</span>'; }
+
+function renderWALog() {
+  const body = document.getElementById('waLogBody');
+  if (!body) return;
+  body.innerHTML = STATE.waLog.map(e => `<tr>
+    <td>${esc(e.time)}</td><td>${esc(e.username)}</td><td><span class="tier ${getTierClass(e.tier)}">${esc(e.tier)}</span></td>
+    <td>${esc(e.intent)}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${esc(e.message)}</td>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${esc(e.reply)}</td>
+    <td>${esc(e.tone)}</td><td>${esc(e.lang)}</td>
+  </tr>`).join('');
+}
+
+function exportWALog() {
+  const csv = 'Time,Username,Tier,Intent,Message,Reply,Tone,Lang\n' + STATE.waLog.map(e =>
+    `"${e.time}","${e.username}","${e.tier}","${e.intent}","${e.message?.replace(/"/g,'""')}","${e.reply?.replace(/"/g,'""')}","${e.tone}","${e.lang}"`
+  ).join('\n');
+  downloadFile('wa_log.csv', csv);
+}
+
+// --- AI QUICK ACTIONS ---
+async function aiQuickAction(username, tier) {
+  switchTab('ai-assistant');
+  const msg = `Give me a quick retention strategy for VIP member "${username}" (${tier} tier). What should I say to them today and why?`;
+  document.getElementById('aiInput').value = msg;
+  sendAIMessage();
+}
+
+async function aiRetentionPlan(username) {
+  switchTab('ai-assistant');
+  const msg = `Create a detailed retention plan for at-risk VIP "${username}". Include: 1) Why they might be churning, 2) Immediate action to take, 3) A WhatsApp message to send them (ZH+EN mixed), 4) Follow-up plan for the next 7 days.`;
+  document.getElementById('aiInput').value = msg;
+  sendAIMessage();
+}
+
+async function aiAnalyzeTargets() {
+  switchTab('ai-assistant');
+  const msg = `Analyze today's Daily Targets list. Which VIPs should I prioritize first and why? Give me a top-5 action plan with specific talking points for each.`;
+  document.getElementById('aiInput').value = msg;
+  sendAIMessage();
+}
+
+async function aiChurnAnalysis() {
+  switchTab('ai-assistant');
+  const msg = `Analyze the current churn alerts. Group them by risk pattern (net winners going silent, long-dormant, recently inactive). For each group, recommend a different retention approach and draft a sample WhatsApp message in ZH+EN mixed.`;
+  document.getElementById('aiInput').value = msg;
+  sendAIMessage();
+}
+
+async function aiIntelSummary() {
+  switchTab('ai-assistant');
+  const msg = `Generate an executive intelligence summary of our VIP portfolio. Cover: overall health, revenue risk, top performers, biggest concerns, and 3 strategic recommendations for this month.`;
+  document.getElementById('aiInput').value = msg;
+  sendAIMessage();
+}
+
+// --- BONUS ---
+function addBonus() {
+  const entry = [
+    document.getElementById('bonusDate').value,
+    '', // month auto
+    document.getElementById('bonusUser').value,
+    document.getElementById('bonusTier').value,
+    document.getElementById('bonusType').value,
+    document.getElementById('bonusAmount').value,
+    document.getElementById('bonusWL').value,
+    'Active',
+    document.getElementById('bonusRemarks').value
+  ];
+
+  if (STATE.apiUrl) {
+    fetch(STATE.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `action=appendRow&sheet=Bonus_Tracker&rowData=${encodeURIComponent(JSON.stringify(entry))}`
+    }).then(() => {
+      showToast('Bonus added!');
+      refreshAllData();
+    }).catch(e => showToast('Error adding bonus', 'error'));
+  } else {
+    showToast('Connect to Google Sheets first', 'error');
+  }
+}
+
+function exportBonusData() {
+  if (!STATE.data.bonus) return;
+  const csv = STATE.data.bonus.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  downloadFile('bonus_export.csv', csv);
+}
+
+// --- UTILITIES ---
+function esc(str) { const d = document.createElement('div'); d.textContent = String(str || ''); return d.innerHTML; }
+function getTierClass(t) { const s = String(t).toLowerCase(); return s.includes('diamond') ? 'diamond' : s.includes('plat') ? 'platinum' : s.includes('gold') ? 'gold' : ''; }
+function findTier(row, headers) { const i = headers.findIndex(h => h?.toLowerCase().includes('tier')); return i >= 0 ? getTierClass(row[i]) : ''; }
+function getRiskClass(v) { const s = String(v).toLowerCase(); return s.includes('critical') || s.includes('p1') ? 'critical' : s.includes('high') || s.includes('p2') ? 'high' : s.includes('medium') || s.includes('p3') ? 'medium' : 'low'; }
+
+function emptyState(msg) { return `<div class="empty-state"><div class="icon">📭</div><p>${msg}</p></div>`; }
+
+function downloadFile(name, content) {
+  const blob = new Blob([content], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+}
+
+function showToast(msg, type='success') {
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;animation:fadeIn 0.3s ease;font-family:var(--font);
+    background:${type==='error'?'var(--accent-red)':type==='warn'?'var(--accent-orange)':'var(--accent-green)'};color:#fff;`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+</script>
+</body>
+</html>
