@@ -157,6 +157,7 @@ input[type=text],input[type=date],input[type=number]{width:100%}
     <span class="status-text" id="sTxt">Not connected</span>
     <button class="btn-sm btn-secondary" onclick="showSetup()">⚙️ Setup</button>
     <button class="btn-sm btn-secondary" onclick="refreshAll()">↻ Refresh</button>
+    <button class="btn-sm btn-green" onclick="openQuickLog()" style="font-weight:700">📝 Log Contact</button>
   </div>
 </div>
 
@@ -2155,8 +2156,12 @@ function renderBudgetPage(){
 
   // Parse all members
   const byGroup = {DIAMOND:[],PLATINUM:[],GOLD:[],SILVER:[],BRONZE:[]};
+  // Load exclude list from Monthly_Snapshot metadata or hardcode
+  const EXCLUDE_SET = new Set(['test001','test8678','sw88','football001','vance001','vance002','vge88','ann123']);
   rows.slice(3).forEach(r=>{
     if(!r[iLogin]) return;
+    const loginStr = String(r[iLogin]).trim().toLowerCase();
+    if(EXCLUDE_SET.has(loginStr)) return; // skip excluded accounts
     const g = String(r[iGroup]||'').toUpperCase().trim();
     if(!byGroup[g]) return;
     byGroup[g].push({
@@ -2502,9 +2507,11 @@ function renderBossView(){
           iAct=fc(H,'action priority','action'),
           iPhone=fc(H,'phone');
 
+    const BOSS_EXCLUDE = new Set(['test001','test8678','sw88','football001','vance001','vance002','vge88','ann123']);
     const pdRows = intel.slice(hIdx+1).filter(r=>{
       const t=(r[iTier]||'').toUpperCase();
-      return t.includes('PLATINUM')||t.includes('DIAMOND');
+      const u=String(r[iUser]||'').trim().toLowerCase();
+      return (t.includes('PLATINUM')||t.includes('DIAMOND')) && !BOSS_EXCLUDE.has(u);
     });
     DATA_bossVIP = pdRows.map(r=>({
       _user: r[iUser]||'—',
@@ -2555,7 +2562,8 @@ function renderBossVIP(){
   const search = (document.getElementById('bossSearch')?.value||'').toLowerCase();
 
   // Assign priority and filter
-  let filtered = DATA_bossVIP.map(m=>{
+  const BV_EXCLUDE = new Set(['test001','test8678','sw88','football001','vance001','vance002','vge88','ann123']);
+  let filtered = DATA_bossVIP.filter(m=>!BV_EXCLUDE.has(m._user.toLowerCase())).map(m=>{
     // W/L in sheet: negative = house lost = player WON (good for player, risk for us)
     // Positive = house won = player lost (normal)
     // For priority: player winning big (wl < -20000) = cashout risk = P1
@@ -2649,5 +2657,265 @@ function saveBossNote(username, note){
 
 
 </script>
+
+<!-- ═══ QUICK CONTACT LOG MODAL ══════════════════════════ -->
+<div id="quickLogModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:420px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div style="font-size:16px;font-weight:700">📝 Quick Contact Log</div>
+      <button onclick="closeQuickLog()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px">×</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">USERNAME *</label>
+        <input id="ql_user" placeholder="e.g. vegeville" autocomplete="off"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px">
+        <div id="ql_suggestions" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;max-height:150px;overflow-y:auto;display:none;margin-top:2px"></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">TIER</label>
+          <select id="ql_tier" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px">
+            <option value="">Auto-detect</option>
+            <option value="DIAMOND">💎 Diamond</option>
+            <option value="PLATINUM">⬡ Platinum</option>
+            <option value="GOLD">★ Gold</option>
+            <option value="SILVER">Silver</option>
+            <option value="BRONZE">Bronze</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">CHANNEL</label>
+          <select id="ql_channel" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px">
+            <option value="WhatsApp">💬 WhatsApp</option>
+            <option value="Call">📞 Call</option>
+            <option value="In-person">🤝 In-person</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">INTENT</label>
+          <select id="ql_intent" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px">
+            <option value="VIP Service">VIP Service</option>
+            <option value="Reactivation">Reactivation</option>
+            <option value="Loss Care">Loss Care</option>
+            <option value="Big Win">Big Win</option>
+            <option value="Upgrade Interest">Upgrade Interest</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Promotion">Promotion</option>
+            <option value="Complaint">Complaint</option>
+            <option value="No Reply Follow-up">No Reply Follow-up</option>
+            <option value="General">General</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">OUTCOME</label>
+          <select id="ql_outcome" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px">
+            <option value="Contacted">✅ Contacted</option>
+            <option value="No Reply">🔴 No Reply</option>
+            <option value="Replied">💬 Replied</option>
+            <option value="Deposited">💰 Deposited</option>
+            <option value="Reactivated">🎯 Reactivated</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">NOTES (optional)</label>
+        <input id="ql_notes" placeholder="What did you say / what happened?"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px">
+      </div>
+
+      <div id="ql_status" style="display:none;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;text-align:center"></div>
+
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button id="ql_saveBtn" onclick="saveQuickLog()"
+          style="flex:1;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
+          💾 Save Contact Log
+        </button>
+        <button onclick="saveQuickLogAndAnother()"
+          style="flex:1;background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:10px;border-radius:8px;font-size:13px;cursor:pointer">
+          Save + Log Another
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);text-align:center" id="ql_monthCount"></div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
+
+// ══════════════════════════════════════════════════════════════
+// QUICK CONTACT LOG
+// ══════════════════════════════════════════════════════════════
+
+// Track logged contacts this session for KPI 4 counter
+let sessionContacts = new Set(JSON.parse(localStorage.getItem('sw_session_contacts')||'[]'));
+let contactLogCount = parseInt(localStorage.getItem('sw_contact_count')||'0');
+
+function openQuickLog(prefillUser, prefillTier) {
+  document.getElementById('quickLogModal').style.display = 'flex';
+  document.getElementById('ql_status').style.display = 'none';
+  if(prefillUser) {
+    document.getElementById('ql_user').value = prefillUser;
+    // Auto-detect tier
+    if(prefillTier) document.getElementById('ql_tier').value = prefillTier;
+    else autoDetectTier(prefillUser);
+  } else {
+    document.getElementById('ql_user').value = '';
+  }
+  updateContactCount();
+  setTimeout(()=>document.getElementById('ql_user').focus(), 100);
+}
+
+function closeQuickLog() {
+  document.getElementById('quickLogModal').style.display = 'none';
+}
+
+// Close on backdrop click
+document.getElementById('quickLogModal').addEventListener('click', function(e){
+  if(e.target === this) closeQuickLog();
+});
+
+// Username autocomplete from VIP scores data
+document.getElementById('ql_user').addEventListener('input', function(){
+  const val = this.value.trim().toLowerCase();
+  const sug = document.getElementById('ql_suggestions');
+  if(val.length < 2) { sug.style.display='none'; return; }
+
+  // Build username list from DATA.scores or DATA_vipintel
+  let names = [];
+  if(DATA_vipintel && DATA_vipintel.length > 3) {
+    const hIdx = findHeaderRow(DATA_vipintel,'username','tier');
+    const H    = DATA_vipintel[hIdx];
+    const iU   = fc(H,'username'), iT = fc(H,'tier');
+    names = DATA_vipintel.slice(hIdx+1)
+      .filter(r=>r[iU]&&String(r[iU]).toLowerCase().includes(val))
+      .slice(0,8)
+      .map(r=>({user:String(r[iU]),tier:String(r[iT]||'')}));
+  }
+
+  if(!names.length) { sug.style.display='none'; return; }
+  sug.style.display = 'block';
+  sug.innerHTML = names.map(n=>`
+    <div onclick="selectUser('${n.user}','${n.tier}')"
+      style="padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"
+      onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background=''">
+      <span style="font-weight:600">${n.user}</span>
+      <span style="font-size:11px;color:var(--muted)">${n.tier}</span>
+    </div>`).join('');
+});
+
+function selectUser(user, tier) {
+  document.getElementById('ql_user').value = user;
+  document.getElementById('ql_suggestions').style.display = 'none';
+  if(tier) document.getElementById('ql_tier').value = tier;
+}
+
+function autoDetectTier(username) {
+  if(!DATA_vipintel || DATA_vipintel.length < 3) return;
+  const hIdx = findHeaderRow(DATA_vipintel,'username','tier');
+  const H    = DATA_vipintel[hIdx];
+  const iU   = fc(H,'username'), iT = fc(H,'tier');
+  const found = DATA_vipintel.slice(hIdx+1).find(r=>String(r[iU]||'').toLowerCase()===username.toLowerCase());
+  if(found) document.getElementById('ql_tier').value = String(found[iT]||'');
+}
+
+function updateContactCount() {
+  const el = document.getElementById('ql_monthCount');
+  if(el) el.textContent = `📊 Logged this month: ${contactLogCount} unique contacts (KPI 4 target: 110)`;
+}
+
+async function saveQuickLog(clearAfter) {
+  const user    = document.getElementById('ql_user').value.trim();
+  const tier    = document.getElementById('ql_tier').value || '—';
+  const channel = document.getElementById('ql_channel').value;
+  const intent  = document.getElementById('ql_intent').value;
+  const outcome = document.getElementById('ql_outcome').value;
+  const notes   = document.getElementById('ql_notes').value.trim();
+
+  if(!user) {
+    showQLStatus('❌ Please enter a username', 'var(--red)');
+    return;
+  }
+
+  const now     = new Date();
+  const dateStr = now.toLocaleDateString('en-GB');
+  const month   = now.toLocaleString('default',{month:'long'})+' '+now.getFullYear();
+  const week    = 'Week '+Math.ceil(now.getDate()/7);
+  const agent   = CFG.agent || 'Marcus';
+
+  const btn = document.getElementById('ql_saveBtn');
+  btn.textContent = '⏳ Saving...';
+  btn.disabled = true;
+
+  try {
+    // Save to Contact_Log via API
+    const result = await apiPost('Contact_Log', {
+      action: 'appendRow',
+      tab: 'Contact_Log',
+      headers: ['#','Date','Username','Tier','Channel','Intent','Outcome','Notes','Agent','Month','Week','',''],
+      data: ['', dateStr, user, tier, channel, intent, outcome, notes, agent, month, week, '', '']
+    });
+
+    // Update local session tracking
+    sessionContacts.add(user.toLowerCase());
+    contactLogCount++;
+    localStorage.setItem('sw_session_contacts', JSON.stringify([...sessionContacts]));
+    localStorage.setItem('sw_contact_count', contactLogCount);
+
+    showQLStatus(`✅ Logged: ${user} — ${outcome}`, 'var(--green)');
+    updateContactCount();
+
+    if(clearAfter !== false) {
+      setTimeout(()=>{
+        if(clearAfter === 'another') {
+          // Reset for next entry
+          document.getElementById('ql_user').value = '';
+          document.getElementById('ql_notes').value = '';
+          document.getElementById('ql_tier').value = '';
+          document.getElementById('ql_status').style.display = 'none';
+          document.getElementById('ql_user').focus();
+        } else {
+          closeQuickLog();
+        }
+      }, 1000);
+    }
+
+  } catch(e) {
+    showQLStatus('❌ Failed to save — check API connection', 'var(--red)');
+    console.error('Quick log error:', e);
+  }
+
+  btn.textContent = '💾 Save Contact Log';
+  btn.disabled = false;
+}
+
+function saveQuickLogAndAnother() {
+  saveQuickLog('another');
+}
+
+function showQLStatus(msg, color) {
+  const el = document.getElementById('ql_status');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = color === 'var(--green)' ? 'rgba(63,185,80,.15)' : 'rgba(248,81,73,.15)';
+  el.style.color = color;
+}
+
+// Keyboard shortcut: Ctrl+L to open quick log
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey || e.metaKey) && e.key === 'l') {
+    e.preventDefault();
+    openQuickLog();
+  }
+  if(e.key === 'Escape') closeQuickLog();
+});
+
+
